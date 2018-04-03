@@ -1,0 +1,71 @@
+{
+  "name": "asset-parser",
+  "version": "1.0.0",
+  "description": "Parse SVG asset bundles",
+  "main": "./lib/",
+  "browser": "./index",
+  "scripts": {
+    "test:web": "mocha --colors --require babel-register --require test/setup.js test/*.test.js",
+    "test": "nyc --reporter=text --reporter=json-summary npm run test:web",
+    "prepublish": "npm run build",
+    "build": "rm -rf ./lib && babel ./asset.js ./index.js ./packer/*.js ./passthrough/*.js ./transform.js -d ./lib",
+    "lint": "eslint-godaddy-react *.js packer/*.js passthrough/*.js ./test/*.js"
+  },
+  "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/parser",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:godaddy/asset-system.git"
+  },
+  "keywords": [
+    "Asset",
+    "SVG",
+    "parser"
+  ],
+  "babel": {
+    "plugins": [
+      "transform-object-rest-spread"
+    ],
+    "presets": [
+      "babel-preset-es2015",
+      "babel-preset-react"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "author": "GoDaddy.com Operating Company, LLC",
+  "contributors": [
+    "Arnout Kazemier <akazemier@godaddy.com>"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "assume": "^1.5.2",
+    "assume-enzyme": "^0.0.1",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "eslint": "^4.14.0",
+    "eslint-config-godaddy-react": "^2.1.0",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-react": "^7.5.1",
+    "jsdom": "^11.5.1",
+    "mocha": "^5.0.1",
+    "nyc": "^11.4.1",
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-test-renderer": "^16.2.0"
+  },
+  "dependencies": {
+    "diagnostics": "^1.1.0",
+    "rip-out": "^1.0.0",
+    "svgs": "^3.2.0"
+  }
+}

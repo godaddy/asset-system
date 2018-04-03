@@ -1,0 +1,4 @@
+[files]
+dev = ['dist/bundle.svgs']
+test = ['dist/bundle.svgs']
+prod = ['dist/bundle.svgs']

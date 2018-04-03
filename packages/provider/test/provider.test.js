@@ -1,0 +1,179 @@
+/* eslint max-nested-callbacks: ["error", 10]*/
+
+import Provider, { context, Fallback, READYSTATES, parser as p } from '../index';
+import { describe, it, beforeEach } from 'mocha';
+import { shallow } from 'enzyme';
+import assume from 'assume';
+import React from 'react';
+
+describe('Provider', function () {
+  let provider;
+  let wrapper;
+
+  const parser = {
+    parse: function parser(format, data, fn) {
+      fn(null, {});
+    },
+    modifiers: p.modifiers.bind(p)
+  };
+
+  beforeEach(function () {
+    wrapper = shallow(
+      <Provider uri='http://example.com/500' parser={ parser }>
+        <div>Example</div>
+      </Provider>
+    );
+
+    provider = wrapper.instance();
+  });
+
+  describe('#fetch', function () {
+    it('sets the state to LOADING', function () {
+      assume(provider.state.readyState).equals(READYSTATES.NOPE);
+
+      provider.fetch(() => {});
+
+      //
+      // Sketchy assertion, because state updates are async, this start
+      // failing in future updates of React.
+      //
+      assume(provider.state.readyState).equals(READYSTATES.LOADING);
+    });
+
+    it('calls the callback once done with final state update', function (next) {
+      assume(provider.state.error).is.a('null');
+
+      provider.fetch(() => {
+        assume(provider.state.readyState).equals(READYSTATES.LOADED);
+        assume(provider.state.error).is.a('error');
+        assume(provider.state.svgs).is.a('object');
+
+        next();
+      });
+    });
+  });
+
+  describe('#modifiers', function () {
+    it('returns an array', function () {
+      assume(provider.modifiers()).is.a('array');
+    });
+
+    it('returns the names of the props which have modifiers', function () {
+      p.modify('fill', () => {});
+      p.modify('color', () => {});
+
+      assume(provider.modifiers()).deep.equal(['fill', 'color']);
+    });
+  });
+
+  describe('#getItem', function () {
+    it('queues the action if we are currently fetching a resource', function () {
+      assume(provider.queue).is.length(0);
+
+      provider.getItem('what', () => {});
+
+      assume(provider.queue).is.length(1);
+      assume(provider.queue[0][0]).equals('what');
+    });
+
+    it('starts fetching when we havent started fetching yet', function () {
+      assume(provider.queue).is.length(0);
+      assume(provider.state.readyState).equals(READYSTATES.NOPE);
+
+      provider.getItem('what', () => {});
+
+      assume(provider.state.readyState).equals(READYSTATES.LOADING);
+      assume(provider.queue).is.length(1);
+    });
+
+    it('clears the queue after fetching is done', function (next) {
+      provider.getItem('what', (err, data) => {
+        assume(provider.queue).is.length(1);
+        assume(provider.queue[0][0]).equals('what');
+
+        assume(provider.state.readyState).equals(READYSTATES.LOADED);
+
+        assume(err).is.a('error');
+        assume(data).equals(Fallback);
+
+        setTimeout(() => {
+          assume(provider.queue).is.length(0);
+          next();
+        }, 0);
+      });
+    });
+
+    it('returns the fallback and error in case of error state', function (next) {
+      provider.state.readyState = READYSTATES.LOADED;
+      provider.state.error = new Error('Something went wrong');
+
+      provider.getItem('name', (err, data) => {
+        assume(err).is.a('error');
+        assume(err.message).equals('Something went wrong');
+
+        assume(data).equals(Fallback);
+
+        next();
+      });
+    });
+
+    it('returns the fallback and error when receiving an unknown name', function (next) {
+      provider.state.readyState = READYSTATES.LOADED;
+
+      provider.getItem('name', (err, data) => {
+        assume(err).is.a('error');
+        assume(err.message).equals('Unknown SVG requested');
+
+        assume(data).equals(Fallback);
+
+        next();
+      });
+    });
+
+    it('returns the stored svg', function (next) {
+      provider.state.readyState = READYSTATES.LOADED;
+      provider.state.svgs = {
+        name: 'data'
+      };
+
+      provider.getItem('name', (err, data) => {
+        assume(err).is.a('null');
+        assume(data).equals('data');
+
+        next();
+      });
+    });
+  });
+
+  describe('.context', function () {
+    it('shares the getItem method with the consumers', function () {
+      const childContext = provider.getChildContext();
+
+      assume(childContext).is.a('object');
+      assume(childContext.getItem).equals(provider.getItem);
+    });
+
+    it('shares the modifiers method with the consumers', function () {
+      const childContext = provider.getChildContext();
+
+      assume(childContext).is.a('object');
+      assume(childContext.modifiers).equals(provider.modifiers);
+    });
+
+    it('shares the Fallback svg with consumers', function () {
+      const childContext = provider.getChildContext();
+
+      assume(childContext).is.a('object');
+      assume(childContext.Fallback).equals(Fallback);
+    });
+
+    describe('{ context }', function () {
+      it('shares its context proptypes', function () {
+        assume(context).is.a('object');
+
+        assume(Provider.contextTypes).equals(context);
+        assume(Provider.childContextTypes).equals(context);
+      });
+    });
+  });
+});

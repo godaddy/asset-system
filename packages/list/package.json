@@ -1,0 +1,56 @@
+{
+  "name": "asset-list",
+  "version": "1.0.0",
+  "description": "Automatically generate documentation for your generated asset-bundle's",
+  "main": "lib/",
+  "browser": "./index",
+  "scripts": {
+    "test:web": "mocha --colors --require babel-register test/*.test.js",
+    "test": "nyc --reporter=text --reporter=json-summary npm run test:web",
+    "prepublishOnly": "npm run build",
+    "build": "rm -rf ./lib && babel ./index.js -d ./lib",
+    "lint": "eslint-godaddy *.js ./test/*.js"
+  },
+  "dependencies": {
+    "bytes": "^3.0.0",
+    "diagnostics": "^1.1.0",
+    "markdown-table": "^1.1.1"
+  },
+  "devDependencies": {
+    "assume": "^1.5.2",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "clone": "^2.1.1",
+    "eslint": "^4.14.0",
+    "eslint-config-godaddy": "^2.1.0",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "mocha": "^4.1.0",
+    "nyc": "^11.4.1"
+  },
+  "babel": {
+    "plugins": [
+      "transform-object-rest-spread"
+    ],
+    "presets": [
+      "babel-preset-es2015"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/list",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:godaddy/asset-system.git"
+  },
+  "author": "GoDaddy.com Operating Company, LLC",
+  "contributors": [
+    "Arnout Kazemier <akazemier@godaddy.com>"
+  ],
+  "license": "MIT"
+}

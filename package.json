@@ -1,0 +1,45 @@
+{
+  "name": "asset-system",
+  "version": "1.0.0",
+  "description": "asset-system is a cross platform asset system for React and React-Native. This repo is the home for all asset- packages.",
+  "main": "index.js",
+  "scripts": {
+    "publish:provider": "mono --publish provider",
+    "publish:webpack": "mono --publish webpack",
+    "publish:parser": "mono --publish parser",
+    "publish:bundle": "mono --publish bundle",
+    "publish:list": "mono --publish list",
+    "test:provider": "mono --test provider",
+    "test:webpack": "mono --test webpack",
+    "test:parser": "mono --test parser",
+    "test:bundle": "mono --test bundle",
+    "test:list": "mono --test list",
+    "test": "mono --test",
+    "publish": "mono --publish",
+    "install": "mono --install && mono --link"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:godaddy/asset-system.git"
+  },
+  "keywords": [
+    "asset"
+  ],
+  "babel": {
+    "presets": [
+      "babel-preset-es2015",
+      "babel-preset-react"
+    ]
+  },
+  "author": "GoDaddy Operating Company, LLC",
+  "license": "MIT",
+  "contributors": [
+    "Arnout Kazemier <akazemier@godaddy.com>"
+  ],
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "mono-repos": "^0.0.4"
+  }
+}

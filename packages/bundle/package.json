@@ -1,0 +1,73 @@
+{
+  "name": "asset-bundle",
+  "version": "1.0.0",
+  "description": "Build process that transforms (multiple) SVG assets into a asset-parser compatible bundle",
+  "main": "lib/",
+  "browser": "./index",
+  "scripts": {
+    "test:web": "mocha --colors --require babel-register test/*.test.js",
+    "test": "npm run build && nyc --reporter=text --reporter=json-summary npm run test:web",
+    "prepublish": "npm run build",
+    "build": "rm -rf ./lib && babel ./index.js ./walker/*.js ./dimensions/*.js -d ./lib",
+    "lint": "eslint-godaddy *.js ./test/*.js"
+  },
+  "dependencies": {
+    "asset-parser": "^1.0.0",
+    "async": "^2.6.0",
+    "camel-case": "^3.0.0",
+    "cheerio": "^1.0.0-rc.2",
+    "diagnostics": "^1.1.0",
+    "puppeteer": "^1.1.0",
+    "react": "^16.2.0",
+    "svgo": "^1.0.3"
+  },
+  "devDependencies": {
+    "assume": "^1.5.2",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "eslint": "^4.14.0",
+    "eslint-config-godaddy": "^2.1.0",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-react": "^7.5.1",
+    "mocha": "^5.0.1",
+    "nyc": "^11.4.1"
+  },
+  "babel": {
+    "plugins": [
+      "transform-object-rest-spread"
+    ],
+    "presets": [
+      "babel-preset-es2015",
+      "babel-preset-react"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "nyc": {
+    "exclude": [
+      "lib"
+    ]
+  },
+  "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/bundle",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:godaddy/asset-system.git"
+  },
+  "keywords": [
+    "SVG",
+    "asset",
+    "bundle"
+  ],
+  "author": "GoDaddy.com Operating Company, LLC",
+  "contributors": [
+    "Arnout Kazemier <akazemier@godaddy.com>"
+  ],
+  "license": "MIT"
+}
