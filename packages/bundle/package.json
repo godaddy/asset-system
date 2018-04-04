@@ -6,7 +6,7 @@
   "browser": "./index",
   "scripts": {
     "test:web": "mocha --colors --require babel-register test/*.test.js",
-    "test": "npm run build && nyc --reporter=text --reporter=json-summary npm run test:web",
+    "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:web",
     "prepublish": "npm run build",
     "build": "rm -rf ./lib && babel ./index.js ./walker/*.js ./dimensions/*.js -d ./lib",
     "lint": "eslint-godaddy *.js ./test/*.js"
