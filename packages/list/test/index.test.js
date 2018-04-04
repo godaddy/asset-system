@@ -18,7 +18,7 @@ describe('List', function () {
   let list;
 
   before(function (next) {
-    this.timeout(5000);
+    this.timeout(20000);
 
     bundle = new Bundle([ godaddy, tiger, homer ]);
     bundle.once('done', (err, out, data) => {
