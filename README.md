@@ -1,4 +1,4 @@
-# asset system
+# asset system [![Build Status](https://travis-ci.org/godaddy/asset-system.svg?branch=master)](https://travis-ci.org/godaddy/asset-system)
 
 `assets-{*}` is a cross platform asset system for React and React-Native.
 It allows you to use the same assets and logic on web and native devices.
