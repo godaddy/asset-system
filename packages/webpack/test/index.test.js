@@ -64,13 +64,13 @@ describe('Asset Pipeline', function () {
 });
 
 describe('WebPack Integration', function () {
+  this.timeout(20000);
+
   function clonepack(merge, fn) {
     webpack({ ...config, ...merge }, fn);
   }
 
   it('executes the plugin without errors', function (next) {
-    this.timeout(5000);
-
     clonepack({}, function (err, stats) {
       if (err) return next(err);
 
