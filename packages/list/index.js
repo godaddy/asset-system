@@ -67,7 +67,7 @@ class List extends EventEmitter {
     const out = this.file.slice(0, -Math.abs(ext.length)) + '.md';
 
     debug(`creating 'dist' folder`);
-    mkdirp.sync('dist')
+    mkdirp.sync('dist');
 
     debug(`writing readme file to ${out}`);
     fs.writeFileSync(out, readme);
