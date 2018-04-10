@@ -3,6 +3,7 @@ const table = require('markdown-table');
 const EventEmitter = require('events');
 const bytes = require('bytes');
 const path = require('path');
+const mkdirp = require('mkdirp');
 const zlib = require('zlib');
 const url = require('url');
 const fs = require('fs');
@@ -64,6 +65,9 @@ class List extends EventEmitter {
   write(readme) {
     const ext = path.extname(this.file);
     const out = this.file.slice(0, -Math.abs(ext.length)) + '.md';
+
+    debug(`creating 'dist' folder`);
+    mkdirp.sync('dist')
 
     debug(`writing readme file to ${out}`);
     fs.writeFileSync(out, readme);
