@@ -1,6 +1,6 @@
 {
   "name": "asset-list",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically generate documentation for your generated asset-bundle's",
   "main": "lib/",
   "browser": "./index",
