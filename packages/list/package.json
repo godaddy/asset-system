@@ -14,7 +14,8 @@
   "dependencies": {
     "bytes": "^3.0.0",
     "diagnostics": "^1.1.0",
-    "markdown-table": "^1.1.1"
+    "markdown-table": "^1.1.1",
+    "mkdirp": "^0.5.1"
   },
   "devDependencies": {
     "assume": "^1.5.2",
