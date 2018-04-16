@@ -56,6 +56,27 @@ describe('Asset Provider', function () {
     }, 100);
   });
 
+  it('correctly resolves the `uri` function', function (next) {
+    function uri(resolved) {
+      setTimeout(function () {
+        resolved(null, 'http://example.com/complex/bundle.svgs');
+      }, 10);
+    }
+
+    const wrapper = mount(
+      <Provider uri={ uri }>
+        <Asset name='complex' height='100' width='100' />
+      </Provider>
+    );
+
+    setTimeout(function () {
+      const html = wrapper.html();
+      complex(html);
+
+      next();
+    }, 100);
+  })
+
   it('renders through nested context', function (next) {
     const wrapper = mount(
       <div>

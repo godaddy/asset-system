@@ -1,6 +1,6 @@
 /* eslint max-nested-callbacks: ["error", 10]*/
 
-import Provider, { context, Fallback, READYSTATES, parser as p } from '../index';
+import Provider, { Asset, context, Fallback, READYSTATES, parser as p } from '../index';
 import { describe, it, beforeEach } from 'mocha';
 import { shallow } from 'enzyme';
 import assume from 'assume';
@@ -50,6 +50,89 @@ describe('Provider', function () {
 
         next();
       });
+    });
+
+    it('props.url can be a function that returns the URL', function (next) {
+      function uri(done) {
+        assume(done).is.a('function');
+        assume(provider.state.url).is.a('null');
+
+        done(null, 'http://example.com/500');
+
+        setTimeout(function () {
+          assume(provider.state.url).is.a('string');
+          assume(provider.state.url).equals('http://example.com/500');
+
+          next();
+        }, 10);
+      }
+
+      wrapper = shallow(
+        <Provider uri={ uri } parser={ parser }>
+        <Asset name='example' width='100' height='100' />
+        </Provider>
+      );
+
+      provider = wrapper.instance();
+      provider.fetch(() => {});
+    });
+
+    it('only calls props.url once to prevent multiple async URL lookups', function (next) {
+      function uri(done) {
+        assume(done).is.a('function');
+        assume(provider.state.url).is.a('null');
+
+        done(null, 'http://example.com/500');
+
+        setTimeout(function () {
+          assume(provider.state.url).is.a('string');
+          assume(provider.state.url).equals('http://example.com/500');
+
+          next();
+
+          //
+          // The extra fetch calls here are intentionally here, if the function
+          // is executed multiple times, we will call the mocha next callback
+          // multiple times which will result in an error.
+          //
+          provider.fetch(() => {});
+          provider.fetch(() => {});
+          provider.fetch(() => {});
+        }, 10);
+      }
+
+      wrapper = shallow(
+        <Provider uri={ uri } parser={ parser }>
+        <Asset name='example' width='100' height='100' />
+        </Provider>
+      );
+
+      provider = wrapper.instance();
+      provider.fetch(() => {});
+    });
+
+    it('sets readyState to LOADED if URL resolving failed', function (next) {
+      function uri(done) {
+        const failure = new Error('Failed to resolve URL in a timely manner');
+        done(failure);
+
+        setTimeout(function () {
+          assume(provider.state.readyState).equals(READYSTATES.LOADED);
+          assume(provider.state.error).equals(failure);
+          assume(provider.state.svgs).is.a('object');
+
+          next();
+        }, 10);
+      }
+
+      wrapper = shallow(
+        <Provider uri={ uri } parser={ parser }>
+        <Asset name='example' width='100' height='100' />
+        </Provider>
+      );
+
+      provider = wrapper.instance();
+      provider.fetch(() => {});
     });
   });
 

@@ -117,6 +117,24 @@ In addition to that it's recommended that this file is served with `text/plain`
 as `Content-Type`. This [prevents a CORS preflight][CORS] request from being
 made and therefor drastically improving performance.
 
+The `uri` property can either be a string or a function. In case of a function
+it will be called with a completion function incase you need to asynchronously
+resolve the URL.
+
+```js
+function resolve(next) {
+  asynctask(function (err, data) {
+    if (err) return next(err);
+
+    next(null, data.url);
+  });
+}
+
+<Provider uri={ resolve }>
+  // ...
+</Provider>
+```
+
 #### preload
 
 Force the provider to automatically start downloading the bundle once the

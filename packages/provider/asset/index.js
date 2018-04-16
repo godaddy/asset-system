@@ -7,14 +7,26 @@ import { Rect } from 'svgs';
 import rip from 'rip-out';
 
 /**
+ * We don't want a pure number, a string value that represents a number
+ * is fine as well
+ *
+ * @type {PropTypes}
+ * @private
+ */
+const numeric = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.number
+]).isRequired;
+
+/**
  * Validation of the props.
  *
  * @type {Object}
  * @private
  */
 const propTypes = {
-  height: PropTypes.number.isRequired,
-  width: PropTypes.number.isRequired,
+  height: numeric,
+  width: numeric,
   children: PropTypes.element,
   onLoadStart: PropTypes.func,
   onLoadEnd: PropTypes.func,

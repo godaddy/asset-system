@@ -51,6 +51,7 @@ export default class Provider extends Component {
     this.state = {
       readyState: READYSTATES.NOPE,   // Current readyState of fetching.
       error: null,                    // Fetching resulted in an error.
+      url: null,                      // Resolved URL.
       svgs: {}                        // List of parsed SVG's.
     };
 
@@ -69,6 +70,39 @@ export default class Provider extends Component {
   }
 
   /**
+   * Resolve a given URL, as it could be that we're given a URL function
+   *
+   * @param {String|Function} uri URI we need to fetch.
+   * @param {Function} fn Completion callback.
+   * @private
+   */
+  resolve(uri, fn) {
+    //
+    // Optimization:
+    //
+    // We are storing the resolved url in the state of the component to prevent
+    // multiple lookups of the bundle URL. We really don't know how many calls
+    // the given function does, so we want the assume the worse case scenario
+    // here, and cache the result for all other .fetch/.resolve calls.
+    //
+    if (this.state.url) return fn(null, this.state.url);
+
+    if (typeof uri === 'string') {
+      return this.setState({ url: uri }, () => {
+        fn(null, uri);
+      });
+    }
+
+    uri((err, url) => {
+      if (err) return fn(err);
+
+      this.setState({ url }, () => {
+        fn(null, url);
+      });
+    });
+  }
+
+  /**
    * Start fetching the specified URI.
    *
    * @param {Function} fn Completion callback.
@@ -79,11 +113,16 @@ export default class Provider extends Component {
 
     this.setState({ readyState: READYSTATES.LOADING }, () => {
       debug('set readyState to LOADING');
-      remote.fetch({ timeout, method, format, uri }, parser, (error, svgs) => {
-        debug('set readyState to LOADED', error, svgs);
 
-        this.setState({ readyState: READYSTATES.LOADED, error, svgs }, fn);
-      });
+      this.resolve(uri, (err, url) => {
+        if (err) return this.setState({ readyState: READYSTATES.LOADED, error: err, svgs: {} }, fn);
+
+        remote.fetch({ timeout, method, format, uri: url }, parser, (error, svgs) => {
+          debug('set readyState to LOADED', error, svgs);
+
+          this.setState({ readyState: READYSTATES.LOADED, error, svgs }, fn);
+        });
+      })
     });
   }
 
@@ -207,7 +246,10 @@ Provider.propTypes = {
     PropTypes.instanceOf(AssetParser),
     PropTypes.object
   ]).isRequired,
-  uri: PropTypes.string.isRequired,
+  uri: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func
+  ]).isRequired,
   method: PropTypes.string,
   timeout: PropTypes.number,
   preload: PropTypes.bool,
