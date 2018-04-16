@@ -36,6 +36,18 @@ export default function SvgWrapper(props) {
 }
 
 /**
+ * We don't want a pure number, a string value that represents a number
+ * is fine as well
+ *
+ * @type {PropTypes}
+ * @private
+ */
+const numeric = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.number
+]).isRequired;
+
+/**
  * Force validation for some default properties that will be required to render
  * assets.
  *
@@ -46,8 +58,8 @@ export default function SvgWrapper(props) {
  * @private
  */
 SvgWrapper.propTypes = {
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
+  width: numeric,
+  height: numeric,
   viewBox: PropTypes.string,
   children: PropTypes.element,
   title: PropTypes.string
