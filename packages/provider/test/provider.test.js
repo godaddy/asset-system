@@ -77,6 +77,26 @@ describe('Provider', function () {
       provider.fetch(() => {});
     });
 
+    it('executes props.url function in the same context as the component', function (next) {
+      function uri(done) {
+        done(null, 'http://example.com/500');
+
+        assume(this.props).is.a('object');
+        assume(this).equals(provider);
+
+        next();
+      }
+
+      wrapper = shallow(
+        <Provider uri={ uri } parser={ parser }>
+        <Asset name='example' width='100' height='100' />
+        </Provider>
+      );
+
+      provider = wrapper.instance();
+      provider.fetch(() => {});
+    });
+
     it('only calls props.url once to prevent multiple async URL lookups', function (next) {
       function uri(done) {
         assume(done).is.a('function');
