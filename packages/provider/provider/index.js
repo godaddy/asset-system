@@ -93,7 +93,7 @@ export default class Provider extends Component {
       });
     }
 
-    uri((err, url) => {
+    uri.call(this, (err, url) => {
       if (err) return fn(err);
 
       this.setState({ url }, () => {
