@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Fixed a race condition where fetching would still trigger setState when the
+  component was unmounted already.
 - Removed React 15 support.
 
 ### 1.1.1
