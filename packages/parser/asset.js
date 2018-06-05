@@ -1,22 +1,13 @@
-import React, { version } from 'react';
 import diagnostics from 'diagnostics';
 import { Pass } from './passthrough';
 import transform from './transform';
+import React from 'react';
 import { G } from 'svgs';
 
 //
 // Setup our debug util.
 //
 const debug = diagnostics('asset:parser:asset');
-
-/**
- * Detect which version of React we're using and if we can optimize
- * our render process.
- *
- * @type {Boolean}
- * @private
- */
-const react16 = +version.slice(0, 2) >= 16;
 
 /**
  * Representation of a single Asset of an bundle.
@@ -50,7 +41,7 @@ export default class Asset {
       this.parsed = transform(this.data, this.version);
     }
 
-    if (react16) return {
+    return {
       props: this.parsed.props,
       svg: (
         <Pass { ...changes } modify={ this.hooks }>
@@ -58,16 +49,5 @@ export default class Asset {
         </Pass>
       )
     };
-
-    return {
-      props: this.parsed.props,
-      svg: (
-        <Pass { ...changes } modify={ this.hooks }>
-          <G>
-            { this.parsed.svg }
-          </G>
-        </Pass>
-      )
-    }
   }
 }
