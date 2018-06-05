@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Removed React 15 support.
+
 ### 1.1.1
 
 - Allowed the `url` function that was added in 1.1.0 to access the provider
