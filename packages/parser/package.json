@@ -1,6 +1,6 @@
 {
   "name": "asset-parser",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Parse SVG asset bundles",
   "main": "./lib/",
   "browser": "./index",
