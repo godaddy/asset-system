@@ -52,6 +52,17 @@ describe('Provider', function () {
       });
     });
 
+    it('does not call the fetch callback when we unmount', function () {
+      assume(provider.mounted).is.true();
+
+      provider.fetch(() => {
+        throw new Error('I should never be called as we unmounted the instance');
+      });
+
+      wrapper.unmount();
+      assume(provider.mounted).is.false();
+    })
+
     it('props.url can be a function that returns the URL', function (next) {
       function uri(done) {
         assume(done).is.a('function');

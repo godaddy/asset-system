@@ -1,4 +1,4 @@
-import { Component, version, Children } from 'react';
+import { Component, Children } from 'react';
 import AssetParser from 'asset-parser';
 import diagnostics from 'diagnostics';
 import Fallback from '../fallback';
@@ -15,15 +15,6 @@ const debug = diagnostics('asset:provider');
 //
 export const parser = new AssetParser();
 const remote = new Remote();
-
-/**
- * Detect which version of React we're using and if we can optimize
- * our render process.
- *
- * @type {Boolean}
- * @private
- */
-const react16 = +version.slice(0, 2) >= 16;
 
 /**
  * Various of readyStates of the Provider.
@@ -47,6 +38,7 @@ export default class Provider extends Component {
   constructor() {
     super(...arguments);
 
+    this.mounted = true;              // Tracks if this component is unmounted
     this.queue = [];
     this.state = {
       readyState: READYSTATES.NOPE,   // Current readyState of fetching.
@@ -70,6 +62,34 @@ export default class Provider extends Component {
   }
 
   /**
+   * Handle the destruction of the component.
+   *
+   * @private
+   */
+  componentWillUnmount() {
+    this.mounted = false;
+    this.queue.length = 0;
+  }
+
+  /**
+   * A safer alternative to `setState` as this takes the current mounted state
+   * of the component in to account to prevent potential race conditions.
+   *
+   * @param {Object} state State that needs to be set.
+   * @param {Function} fn Completion callback when state is set.
+   * @private
+   */
+  saveState(state, fn) {
+    if (!this.mounted) return debug('root component no longer mounted');
+
+    this.setState(state, () => {
+      if (!this.mounted) return debug('root component no longer mounted');
+
+      fn(...arguments);
+    });
+  }
+
+  /**
    * Resolve a given URL, as it could be that we're given a URL function
    *
    * @param {String|Function} uri URI we need to fetch.
@@ -88,7 +108,7 @@ export default class Provider extends Component {
     if (this.state.url) return fn(null, this.state.url);
 
     if (typeof uri === 'string') {
-      return this.setState({ url: uri }, () => {
+      return this.saveState({ url: uri }, () => {
         fn(null, uri);
       });
     }
@@ -96,7 +116,7 @@ export default class Provider extends Component {
     uri.call(this, (err, url) => {
       if (err) return fn(err);
 
-      this.setState({ url }, () => {
+      this.saveState({ url }, () => {
         fn(null, url);
       });
     });
@@ -111,16 +131,16 @@ export default class Provider extends Component {
   fetch(fn) {
     const { timeout, method, format, uri, parser } = this.props;
 
-    this.setState({ readyState: READYSTATES.LOADING }, () => {
+    this.saveState({ readyState: READYSTATES.LOADING }, () => {
       debug('set readyState to LOADING');
 
       this.resolve(uri, (err, url) => {
-        if (err) return this.setState({ readyState: READYSTATES.LOADED, error: err, svgs: {} }, fn);
+        if (err) return this.saveState({ readyState: READYSTATES.LOADED, error: err, svgs: {} }, fn);
 
         remote.fetch({ timeout, method, format, uri: url }, parser, (error, svgs) => {
           debug('set readyState to LOADED', error, svgs);
 
-          this.setState({ readyState: READYSTATES.LOADED, error, svgs }, fn);
+          this.saveState({ readyState: READYSTATES.LOADED, error, svgs }, fn);
         });
       })
     });
@@ -230,8 +250,7 @@ export default class Provider extends Component {
     const state = Object.keys(READYSTATES)[this.state.readyState - 1];
     debug(`rendering <Provider state={${state}}>, we are`, child ? 'a child of another <Provider>' : 'the absolute root');
 
-    if (react16) return this.props.children;
-    return Children.only(this.props.children);
+    return this.props.children;
   }
 }
 

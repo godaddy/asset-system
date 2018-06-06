@@ -33,12 +33,6 @@ npm install --save asset-provider
 If you use this module on React-Native, make sure you also install the
 `react-native-svg` dependency.
 
-**IMPORTANT** This module is written for React 16 but comes with basic support
-for React 15. It's highly recommended that you upgrade as soon as possible. In
-order to make React 15 work we **force** you to only use a single child element
-for the `<Provider />`. In addition to that, the React 15 specific changes of
-the `asset-parser` apply as well.
-
 ## Usage
 
 This library exposes the `Provider`, `Asset` components which are used for

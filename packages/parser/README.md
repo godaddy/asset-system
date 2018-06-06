@@ -17,11 +17,6 @@ npm install --save asset-parser
 If you run this on `react-native` you also need to **manually** install the
 `react-native-svg` dependency.
 
-**IMPORTANT** This module was build with React 16+ in mind. If you are using
-React 15, you will end up with useless elements in your SVG tree as we need to
-wrap children with an extra `</ G>` tag. It's advised to upgrade to React 16+
-as soon as possible.
-
 ## Table of contents
 
 - [Installation](#installation)
