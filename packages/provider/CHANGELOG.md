@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 2.0.0
+### 2.0.0 - 3.0.0 (failed publish)
 
 - Fixed a race condition where fetching would still trigger setState when the
   component was unmounted already.
