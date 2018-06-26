@@ -2,8 +2,10 @@
   "name": "asset-list",
   "version": "1.0.1",
   "description": "Automatically generate documentation for your generated asset-bundle's",
-  "main": "lib/",
-  "browser": "./index",
+  "main": "./lib",
+  "browser": "./lib",
+  "module": "./index",
+  "react-native": "./index",
   "scripts": {
     "test:web": "mocha --colors --require babel-register test/*.test.js",
     "test": "nyc --reporter=text --reporter=lcov npm run test:web",
