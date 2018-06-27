@@ -2,8 +2,10 @@
   "name": "asset-webpack",
   "version": "1.0.0",
   "description": "asset-bundle integration for WebPack",
-  "main": "lib/",
-  "browser": "./index",
+  "main": "./lib",
+  "browser": "./lib",
+  "module": "./index",
+  "react-native": "./index",
   "scripts": {
     "test:web": "mocha --colors --require babel-register test/*.test.js",
     "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:web",

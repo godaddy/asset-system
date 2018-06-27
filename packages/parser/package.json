@@ -2,8 +2,10 @@
   "name": "asset-parser",
   "version": "2.0.0",
   "description": "Parse SVG asset bundles",
-  "main": "./lib/",
-  "browser": "./index",
+  "main": "./lib",
+  "browser": "./lib",
+  "module": "./index",
+  "react-native": "./index",
   "scripts": {
     "test:web": "mocha --colors --require babel-register --require test/setup.js test/*.test.js",
     "test": "nyc --reporter=text --reporter=lcov npm run test:web",

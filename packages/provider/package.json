@@ -2,8 +2,10 @@
   "name": "asset-provider",
   "version": "3.0.0",
   "description": "Provides the SVG assets through React Context",
-  "main": "lib/",
-  "browser": "./index",
+  "main": "./lib",
+  "browser": "./lib",
+  "module": "./index",
+  "react-native": "./index",
   "scripts": {
     "test:web": "mocha --colors --require babel-register --require test/setup.js test/*.test.js",
     "test": "nyc --reporter=text --reporter=lcov npm run test:web",
