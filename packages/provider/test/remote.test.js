@@ -30,7 +30,7 @@ describe('Remote', function () {
 
   describe('#fetch', function () {
     it('returns items from cache', function (next) {
-      const item = remote.id(method, uri);
+      const item = remote.queue.id(method, uri);
       const mock = { hello: 'world' };
 
       remote.cache[item] = mock;
@@ -44,7 +44,7 @@ describe('Remote', function () {
     });
 
     it('returns `undefined` when a response is cached', function () {
-      const item = remote.id(method, uri);
+      const item = remote.queue.id(method, uri);
       const mock = { hello: 'world' };
 
       remote.cache[item] = mock;
@@ -118,7 +118,7 @@ describe('Remote', function () {
     });
 
     it('caches the correctly parsed data', function (next) {
-      const item = remote.id(method, uri);
+      const item = remote.queue.id(method, uri);
       const mock = { hello: 'world' };
 
       assume(remote.cache).is.length(0);
