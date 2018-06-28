@@ -70,6 +70,7 @@ supported:
 
 - `namespace` Should we use the folder structure of the assets as namespaces,
   defaults to `false`.
+- `root` Location of the root directory that used to generate the namespaces.
 - `bundler` Options that will be passed in to the `asset-bundle` constructor.
 - `modify` An object where the key is the name of the modifer and the value the
   function that does the modification. This will be passed in to `bundle#modify`.

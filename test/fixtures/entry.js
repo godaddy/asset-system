@@ -1,3 +1,3 @@
-require('./godaddy.svg');
-require('./tiger.svg');
-require('./deeper/homer.svg');
+global.godaddy = require('./godaddy.svg');
+global.tiger = require('./tiger.svg');
+global.homer = require('./deeper/homer.svg');
