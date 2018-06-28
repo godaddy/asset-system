@@ -161,7 +161,7 @@ class WebPack {
           if (err) throw err;
 
           const hash = this.hash(contents);
-          const filename = compilation.getPath(this.name, {});
+          const filename = compilation.getPath(hash, {});
 
           //
           // Register the new asset.
