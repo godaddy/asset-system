@@ -13,10 +13,9 @@ const debug = diagnostics('asset:provider:remote');
  * @constructor
  * @public
  */
-export default class Remote extends Queue {
+export default class Remote {
   constructor() {
-    super();
-
+    this.queue = new Queue();
     this.cache = {};
   }
 
@@ -32,7 +31,7 @@ export default class Remote extends Queue {
    */
   fetch(options, parser, fn) {
     const { method, uri, format, timeout } = options;
-    const id = this.id(method, uri);
+    const id = this.queue.id(method, uri);
     const item = this.cache[id];
 
     //
@@ -44,7 +43,7 @@ export default class Remote extends Queue {
       return fn(null, item);
     }
 
-    if (this.add(method, uri, fn)) {
+    if (this.queue.add(method, uri, fn)) {
       debug(`the requested uri(${uri}) was already requested, waiting for callback`);
       return true;
     }
@@ -67,7 +66,7 @@ export default class Remote extends Queue {
       // important for native devices!
       //
       if (!error) this.cache[id] = svgs;
-      this.run(method, uri, error, svgs);
+      this.queue.run(method, uri, error, svgs);
     };
 
     debug(`first time requesting uri(${uri})`);

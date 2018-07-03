@@ -1,15 +1,17 @@
-import Bundle from 'asset-bundle';
+import { createContext, runInContext } from 'vm';
 import { describe, it } from 'mocha';
 import Pipeline from '../index.js';
+import Bundle from 'asset-bundle';
 import webpack from 'webpack';
 import assume from 'assume';
 import path from 'path';
 import fs from 'fs';
 
 const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
+const entry = path.join(fixtures, 'entry.js');
 
 const config = {
-  entry: path.join(fixtures, 'entry.js'),
+  entry: entry,
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'output.js'
@@ -22,7 +24,10 @@ const config = {
   },
 
   plugins: [
-    new Pipeline('bundle.svgs', { namespace: true })
+    new Pipeline('bundle.svgs', {
+      root: entry,
+      namespace: true
+    })
   ]
 };
 
@@ -40,24 +45,24 @@ describe('Asset Pipeline', function () {
 
     const test = new Packer('example', {});
 
-    assume(test.filename).is.a('function');
+    assume(test.hash).is.a('function');
     assume(test.apply).is.a('function');
   });
 
-  describe('#filename', function () {
+  describe('#hash', function () {
     const content = '08080ad8fa0d98f0sd98fa0sd98fa0s lol what is this';
 
     it('returns the filename if theres no replace tokens', function () {
       setup('example.svgs');
 
-      const name = pipeline.filename(content);
+      const name = pipeline.hash(content);
       assume(name).equals('example.svgs');
     });
 
     it('replaces [hash] with md5 hash', function () {
       setup('example.[hash].svgs');
 
-      const name = pipeline.filename(content);
+      const name = pipeline.hash(content);
       assume(name).equals('example.a09246d44e397b3903a4fc5efd6b9566.svgs');
     });
   });
@@ -78,20 +83,32 @@ describe('WebPack Integration', function () {
         return next(stats.toString());
       }
 
-      const output = path.join(__dirname, 'dist', 'bundle.svgs');
+      const dist = path.join(__dirname, 'dist');
+      const bundle = fs.readFileSync(path.join(dist, 'bundle.svgs'), 'utf-8');
+      const output = fs.readFileSync(path.join(dist, 'output.js'), 'utf-8');
 
       //
-      // Ensure that the bundle is correctly written.
+      // Ensure that the imports are rewritten
       //
-      fs.readFile(output, 'utf8', function read(err, bundle) {
-        if (err) return next(err);
+      const sandbox = {};
+      createContext(sandbox);
+      runInContext(output, sandbox);
 
-        assume(bundle).includes('"deeper/homer":');
-        assume(bundle).includes('"godaddy":');
-        assume(bundle).includes('"tiger":');
+      //
+      // Validate that the require statements return the name of the asset.
+      //
+      assume(sandbox.godaddy).equals('godaddy');
+      assume(sandbox.homer).equals('deeper/homer');
+      assume(sandbox.tiger).equals('tiger');
 
-        next();
-      });
+      //
+      // Validate that these names are actually in the bundle.
+      //
+      assume(bundle).includes('"deeper/homer":');
+      assume(bundle).includes('"godaddy":');
+      assume(bundle).includes('"tiger":');
+
+      next();
     });
   });
 

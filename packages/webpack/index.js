@@ -4,6 +4,20 @@ import async from 'async';
 import path from 'path';
 
 /**
+ * Get the name of the file that required this module, so we can attempt to
+ * resolve a sensible default root directory for the plugin.
+ *
+ * @type {String}
+ * @private
+ */
+var requiredRoot = module.parent && module.parent.filename;
+delete require.cache[__filename];
+
+if (!requiredRoot || !~requiredRoot.indexOf('webpack.config.js')) {
+  requiredRoot = process.cwd();
+}
+
+/**
  * WebPack wrapper for the asset-bundle module.
  *
  * @constructor
@@ -24,7 +38,7 @@ class WebPack {
    * @returns {String} The filename.
    * @private
    */
-  filename(contents) {
+  hash(contents) {
     if (!~this.name.indexOf('[')) return this.name;
 
     const hash = createHash('md5');
@@ -43,10 +57,9 @@ class WebPack {
     compiler.plugin('this-compilation', (compilation) => {
       const options = compilation.options;
       const output = options.output.path;
-      const entry = options.entry;
 
       compilation.plugin('optimize-assets', (assets, next) => {
-        const { plugins, namespace, bundler, modify } = this.options;
+        const { plugins, namespace, bundler, modify, root } = this.options;
         const files = [];
 
         //
@@ -55,7 +68,7 @@ class WebPack {
         // steps our selfs as we don't have the assets yet.
         //
         const bundle = new Bundle([], {
-          root: namespace ? path.dirname(entry) : null,
+          root: namespace ? path.dirname(root || requiredRoot) : null,
           ...(bundler || {})
         });
 
@@ -115,16 +128,23 @@ class WebPack {
           // source. If this breaks, it's most likely this, good luck
           // fixing it brave soul that reads this.
           //
-          // Worth noting, removing the __webpack_public_path__ ref from
-          // exports seem to kill the whole source replacement ¯\_(ツ)_/¯
+          // 1. Removing the __webpack_public_path__ will break the build;
+          // 2. Multi line code will break the build;
+          // 3. Not doing a module.exports = __webpack_public_path__ breaks;
+          // 4. As __webpack_public_path__ can be set, we cant use `? x : y`
+          // 5. As __webpack_public_path__ can be "" we cant `x && y`;
+          // 6. We can't even wrap it in () to create: module.exports (__wpp_, y);
           //
-          module._source._value = `module.exports = __webpack_public_path__ + ${JSON.stringify(name)};`;
-          module.parser.parse(module._source.source(), {
-            current: module,
-            compilation,
-            options,
-            module
-          });
+          // However, doing a double override of the `module.exports` does work
+          // this means we only have to store the (potentially long) name of
+          // the asset once in the new source of the require.
+          //
+          // Have mercy on the brave soul that will ever have to debug this
+          // madness.
+          //
+          // Days wasted by this webpack bullshit: 2
+          //
+          module._source._value = 'module.exports = __webpack_public_path__; module.exports =' + JSON.stringify(name);
         });
 
         //
@@ -140,7 +160,8 @@ class WebPack {
         ], (err, contents) => {
           if (err) throw err;
 
-          const filename = this.filename(contents);
+          const hash = this.hash(contents);
+          const filename = compilation.getPath(hash, {});
 
           //
           // Register the new asset.
