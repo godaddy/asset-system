@@ -1,6 +1,6 @@
 {
   "name": "asset-provider",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Provides the SVG assets through React Context",
   "main": "./lib",
   "browser": "./lib",
@@ -70,7 +70,7 @@
     "react-test-renderer": "^16.2.0"
   },
   "dependencies": {
-    "asset-parser": "^2.0.0",
+    "asset-parser": "^2.1.0",
     "diagnostics": "^1.1.0",
     "queueback": "^1.2.0",
     "requests": "^0.2.2",
