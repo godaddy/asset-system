@@ -1,4 +1,4 @@
-# asset system [![Build Status](https://img.shields.io/travis/babel/babel/master.svg?label=travis&maxAge=43200)](https://travis-ci.org/godaddy/asset-system) [![Coverage Report](https://img.shields.io/codecov/c/github/godaddy/asset-system/master.svg?maxAge=43200)](https://codecov.io/gh/godaddy/asset-system) 
+# asset system [![Build Status](https://img.shields.io/travis/babel/babel/master.svg?label=travis&maxAge=43200)](https://travis-ci.org/godaddy/asset-system) [![Coverage Report](https://img.shields.io/codecov/c/github/godaddy/asset-system/master.svg?maxAge=43200)](https://codecov.io/gh/godaddy/asset-system)
 
 `assets-{*}` is a cross platform asset system for React and React-Native.
 It allows you to use the same assets and logic on web and native devices.
@@ -21,6 +21,7 @@ are looking for specific documentation about a projects:
   - [Specify the `file-loader` for .svg extensions](#specify-the-file-loader-for-svg-extensions)
   - [Configure plugin](#configure-plugin)
   - [Producing a bundle](#producing-a-bundle)
+- [Integrate with Next.js](#integrate-with-nextjs)
 - [Integrate with warehouse.ai](#integrate-with-warehouseai)
 - [Project Management](#project-management)
   - [Install](#install)
@@ -158,6 +159,76 @@ Create an entry file that requires the SVG assets:
 require('./file.svg');
 require('./another.svg');
 require('./more.svg');
+```
+
+## Integrate with [next.js][next]
+
+Next.js is a minimalistic framework for server-rendered React applications. The
+render flow of Next.js is as followed:
+
+1. On first render, your application will be rendered on the **server** and the
+   resulting HTML will be send to the client.
+2. The returned HTML will be rehydrated with ReactDOM so all event listeners
+   are attached again and every re-render of your application will work as
+   intended.
+
+This means that if you include an SVG element in your application it will send
+to the client on initial render as part of the HTML payload as well as be
+included in the client-side bundle as it needs to be available for re-rendering.
+
+Asset-System's build-in optimizations will automatically resolve this
+duplication as it will render a placeholder with the same dimensions as the
+original SVG, and once the application is rehydrated on the client-side it
+fetch the SVG bundle, and render your intended SVG in the placeholder. As the
+placeholder is the same dimensions as the actual SVG, there will be no annoying
+jumping of layout (relayout).
+
+In order to implement Asset-System with Next.js, we need to add our
+`asset-webpack` module to their own `webpack.config.js`, this is done by
+creating a custom `next.config.js` and assigning a `webpack` function that
+alters the webpack. In this example we use `webpack-merge` to help with the
+merging of our new webpack rules:
+
+```js
+// next.config.js
+module.exports = {
+  webpack: function webpack(config) {
+    return require('webpack-merge').smart(config, {
+      module: {
+        rules: [
+          {
+            test: /\.(svg)$/,
+            use: ['file-loader']
+          }
+        ]
+      },
+      plugins: [
+        new Bundler('static/bundle.svgs', {
+          root: __dirname
+        })
+      ]
+    });
+  }
+}
+```
+
+Once you have your custom `next.config.js` in place, you can reference the
+generated bundle at `/_next/static/bundle.svgs` in your pages:
+
+```js
+// pages/index.js
+
+import Provider, { Asset } from 'asset-provider';
+import reactLogo from '@fortawesome/fontawesome-free/svgs/brands/react.svg';
+
+export default function Index(props) {
+  return (
+    <Provider uri='/_next/static/bundle.svgs'>
+      <h1>Rendering the React Logo</h1>
+      <Asset name={ reactLogo } width={ 100 } height={ 100 } title='The React logo' />
+    </Provider>
+  )
+}
 ```
 
 ## Integrate with [warehouse.ai][warehouse]
@@ -300,3 +371,4 @@ mono --publish parser
 [mono]: https://github.com/3rd-Eden/mono-repos/mono.md
 [packages]: /packages/
 [warehouse]: https://github.com/godaddy/warehouse.ai
+[next]: https://github.com/zeit/next.js
