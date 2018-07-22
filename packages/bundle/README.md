@@ -31,6 +31,17 @@ The bundle process executes the following steps to produce a bundle:
 npm install --save asset-bundle
 ```
 
+The bundler has an **optional** dependency on `puppeteer`. This module is used
+to resolve the `viewBox` of a given `svg` asset if there is no `viewBox` or
+`height/width` combination available on the asset. If these properties are
+missing on some of your assets you can either manually update them, or install
+`puppeteer` and it will automatically extract the correct viewBox from your
+svg.
+
+```
+npm install --save puppeteer
+```
+
 ## Table of Contents
 
 - [Usage](#usage)
