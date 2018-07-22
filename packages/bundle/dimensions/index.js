@@ -4,6 +4,28 @@ import render from './render';
 const debug = diagnostics('asset:bundle:dimensions');
 
 /**
+ * Really stupid simple warning output.
+ *
+ * @param {Array} lines The messages that needs to be spammed.
+ * @private
+ */
+function warning(lines) {
+  if (warning.warned) return;
+
+  lines.unshift('');    // Extra whitespace at the start.
+  lines.push('');       // Extra whitespace at the end.
+
+  lines.forEach(function each(line) {
+    console.error('asset-bundle:warning', line);
+  });
+
+  //
+  // Prevent spamming of multiple error messages.
+  //
+  warning.warned = true;
+}
+
+/**
  * Ensure that we have dimension information from the read SVG so we can generate
  * a valid viewBox for the SVG.
  *
@@ -57,7 +79,46 @@ export default function dimensions(svg, fn) {
   // tag from the data and replace it with an empty once so the size is
   // determined based on the actual size of the svg, not by any other prop.
   //
-  debug(`The ${svg.name} does not have viewBox information, rendering`);
+  // The only problem here is that in order todo this we actually need to
+  // download a full browser on the users device in order to get the correct
+  // information. The `puppeteer` dependency can be up to 230mb that needs
+  // to be downloaded on each installation. If the user doesn't manually install
+  // this dependency, we will output a warning when we encounter an svg that
+  // has `width` and `height` set as we cannot accurately measure it. And
+  // in case of no width/height combo we will do a hard fail, forcing people
+  // to install it.
+
+  let puppeteer = true;
+  try { require.resolve('puppeteer'); }
+  catch (e) { puppeteer = false; }
+
+  if (!puppeteer && (root.attr('width') && root.attr('height'))) {
+    warning([
+      'One of the svgs did not have a viewBox property, in order to correctly',
+      'calculate this, we need use `puppeteer` for browser based detection.',
+      'Please run the following command in the root of application.',
+      ''
+      'npm install --save puppeteer'
+      ''
+      'The bundle process will still continue but the results might be inaccurate'
+    ]);
+
+    return viewBox({
+      width: root.attr('width'),
+      height: root.attr('height')
+    });
+  }
+
+  if (!puppeteer) throw new Error([
+    'The supplied svg image does not have a `viewBox` or `width/height` combination.',
+    'We are unable to extract or create a valid viewBox for this asset without the',
+    'installation of `puppeteer`. Please run the following command:',
+    ''
+    'npm install --save puppeteer',
+    ''
+    'And run the bundle command again.'
+  ].join('\n'))
+
   render(svg.data.replace(/<svg[^<]+?>/g, '<svg>'), function (bb) {
     setImmediate(function escapePromiseHell() {
       viewBox(bb);

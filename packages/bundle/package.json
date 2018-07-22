@@ -19,12 +19,12 @@
     "camel-case": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
     "diagnostics": "^1.1.0",
-    "puppeteer": "^1.1.0",
     "react": "^16.2.0",
     "svgo": "^1.0.3"
   },
   "devDependencies": {
     "assume": "^1.5.2",
+    "puppeteer": "^1.1.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
