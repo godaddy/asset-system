@@ -94,12 +94,14 @@ export default function dimensions(svg, fn) {
 
   if (!puppeteer && (root.attr('width') && root.attr('height'))) {
     warning([
+      'file: '+ svg.loc,
+      '',
       'One of the svgs did not have a viewBox property, in order to correctly',
       'calculate this, we need use `puppeteer` for browser based detection.',
       'Please run the following command in the root of application.',
-      ''
-      'npm install --save puppeteer'
-      ''
+      '',
+      'npm install --save puppeteer',
+      '',
       'The bundle process will still continue but the results might be inaccurate'
     ]);
 
@@ -110,12 +112,14 @@ export default function dimensions(svg, fn) {
   }
 
   if (!puppeteer) throw new Error([
+    'file: '+ svg.loc,
+    '',
     'The supplied svg image does not have a `viewBox` or `width/height` combination.',
     'We are unable to extract or create a valid viewBox for this asset without the',
     'installation of `puppeteer`. Please run the following command:',
-    ''
+    '',
     'npm install --save puppeteer',
-    ''
+    '',
     'And run the bundle command again.'
   ].join('\n'))
 
