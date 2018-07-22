@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### 3.0.0
+
+- Removed `puppeteer` from the dependencies and made it an optional dependency
+  instead as it needs to download 230mb+ files on installation each time for
+  an edge case as documented in #13
+
 ### 2.1.0
 
 - Point main/browser to ES5 builds.
