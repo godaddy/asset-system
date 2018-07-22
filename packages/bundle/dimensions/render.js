@@ -1,7 +1,16 @@
-import puppeteer from 'puppeteer';
 import diagnostics from 'diagnostics';
 
 const debug = diagnostics('asset:bundle:render');
+
+let puppeteer;
+try {
+  puppeteer = require('puppeteer');
+} catch (ex) {
+  //
+  // Ignore errors here since the consumer is notified
+  // at run-time only in ./index.js
+  //
+}
 
 /**
  * Extract height and width from an SVG by rendering it and extracting
