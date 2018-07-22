@@ -10,19 +10,12 @@ const debug = diagnostics('asset:bundle:dimensions');
  * @private
  */
 function warning(lines) {
-  if (warning.warned) return;
-
   lines.unshift('');    // Extra whitespace at the start.
   lines.push('');       // Extra whitespace at the end.
 
   lines.forEach(function each(line) {
     console.error('asset-bundle:warning', line);
   });
-
-  //
-  // Prevent spamming of multiple error messages.
-  //
-  warning.warned = true;
 }
 
 /**
@@ -98,7 +91,7 @@ export default function dimensions(svg, fn) {
       '',
       'One of the svgs did not have a viewBox property, in order to correctly',
       'calculate this, we need use `puppeteer` for browser based detection.',
-      'Please run the following command in the root of application.',
+      'Please run the following command:',
       '',
       'npm install --save puppeteer',
       '',
@@ -114,14 +107,14 @@ export default function dimensions(svg, fn) {
   if (!puppeteer) throw new Error([
     'file: '+ svg.loc,
     '',
-    'The supplied svg image does not have a `viewBox` or `width/height` combination.',
+    'The supplied svg image does not have a `viewBox` and `width/height` combination.',
     'We are unable to extract or create a valid viewBox for this asset without the',
     'installation of `puppeteer`. Please run the following command:',
     '',
     'npm install --save puppeteer',
     '',
-    'And run the bundle command again.'
-  ].join('\n'))
+    'Or manually fix the svg, and run the bundle command again.'
+  ].join('\n'));
 
   render(svg.data.replace(/<svg[^<]+?>/g, '<svg>'), function (bb) {
     setImmediate(function escapePromiseHell() {
