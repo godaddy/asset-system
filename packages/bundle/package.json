@@ -1,6 +1,6 @@
 {
   "name": "asset-bundle",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Build process that transforms (multiple) SVG assets into a asset-parser compatible bundle",
   "main": "./lib",
   "browser": "./lib",

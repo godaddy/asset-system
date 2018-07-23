@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 3.0.1
+
+- Also lazy require the `puppeteer` library in our render method.
+
 ### 3.0.0
 
 - Removed `puppeteer` from the dependencies and made it an optional dependency
