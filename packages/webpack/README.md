@@ -29,33 +29,8 @@ Import the loader in to your `webpack.config.js`:
 
 ```js
 import SVGBundler from 'asset-webpack';
-```
 
-### Specify the `file-loader` for .svg extensions
-
-First we need to ensure that `.svg` files are handled as normal, static, files.
-This is done by specifying a `file-loader` for the given extension. Update the
-module loaders to contain the following:
-
-```js
-module: {
-  loaders: [
-    { test: /\.svg$/, loaders: [ 'file-loader' ] }
-  ]
-}
-```
-
-### Configure plugin
-
-The plugin supplied in the `plugin` array of your `webpack.config.js`:
-
-```js
-{
-  ...,
-  plugins: [
-    new SVGBundler('bundle.svgs', { /* opts */ })
-  ]
-}
+const bundle = new SVGBundler('bundle.svgs', { /* opts */ });
 ```
 
 The first argument is the name the bundle. It should be single file name, and
@@ -78,7 +53,6 @@ supported:
   The plugins option should be an `Array` of arrays which is spread on the
   `bundle#plugin` method.
 
-
 ```js
   ...
   namespace: true,
@@ -94,6 +68,41 @@ supported:
   ]
   ...
 ```
+
+### Configure the loader
+
+First we need to ensure that `.svg` files are handled as normal, static, files.
+This is done by specifying a `file-loader` for the given extension. Update the
+module rules/loaders to contain the following:
+
+```js
+module: {
+  rules: [
+    { test: /\.svg$/, use: bundle.loader() }
+  ]
+}
+```
+
+The `bundle.loader()` will return a correctly pre-configured `file-loader`
+which we can use to extract files.
+
+### Insert the bundle instance as `plugin`
+
+Last but not least, pass the created `bundle` instance into the `plugin` array
+of your `webpack.config.js`:
+
+```js
+{
+  ...,
+  plugins: [ bundle ]
+}
+```
+
+And done, you've completed the following steps:
+
+- Created a new Bundle instance
+- Used it's loader method to configure the correct loader
+- Passed the instance into the `plugin` array
 
 ### Producing a bundle
 
