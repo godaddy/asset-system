@@ -45,7 +45,7 @@ class WebPack {
         get: () => {
           return path.join(this.output, name);
         }
-      })
+      });
 
       this.bundle.plugin(Constructor, opts);
     });
@@ -83,10 +83,10 @@ class WebPack {
    */
   loader() {
     return {
-      loader: 'file-loader',
+      loader: require.resolve('./loader'),
       options: {
-        publicPath: (url) => url,
-        name: (file) => this.bundle.name(file)
+        external: '[path][name].[ext]',
+        internal: (file) => this.bundle.name(file)
       }
     };
   }

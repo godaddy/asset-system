@@ -37,16 +37,16 @@ describe('Asset Pipeline', function () {
       assume(pipeline.loader).is.a('function');
     });
 
-    it('pre-configures the loader to `file-loader`', function () {
+    it('pre-configures the loader to our own loader', function () {
       const loader = pipeline.loader();
 
       assume(loader).is.a('object');
-      assume(loader.loader).equals('file-loader');
+      assume(loader.loader).equals(require.resolve('../loader'));
     });
 
-    it('provides a name override function that uses bundle#name', function () {
+    it('provides a internal override function that uses bundle#name', function () {
       const loader = pipeline.loader();
-      const name = loader.options.name;
+      const name = loader.options.internal;
 
       [
         path.join(__dirname, 'test.svg'),
@@ -54,15 +54,6 @@ describe('Asset Pipeline', function () {
       ].forEach(function (filename) {
         assume(name(filename)).equals(pipeline.bundle.name(filename));
       });
-    });
-
-    it('proviers a publicPath method that prevents a public path', function () {
-      const loader = pipeline.loader();
-      const publicPath = loader.options.publicPath;
-
-      assume(publicPath('foo')).equals('foo');
-      assume(publicPath('/foo')).equals('/foo');
-      assume(publicPath('/foo/bar')).equals('/foo/bar');
     });
   });
 
@@ -108,6 +99,7 @@ describe('WebPack Integration', function () {
       },
 
       plugins: [
+        pipeline
       ]
     };
 

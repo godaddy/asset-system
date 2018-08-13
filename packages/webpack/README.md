@@ -14,13 +14,8 @@ compatible bundle.
 
 ## Install
 
-The following dependencies need to be installed:
-
-- `file-loader` For loading SVG files.
-- `asset-webpack` The actual plugin.
-
 ```
-npm install --save asset-webpack file-loader
+npm install --save asset-webpack
 ```
 
 ## Usage
@@ -71,8 +66,7 @@ supported:
 
 ### Configure the loader
 
-First we need to ensure that `.svg` files are handled as normal, static, files.
-This is done by specifying a `file-loader` for the given extension. Update the
+First we need to ensure that `.svg` files are handled by the bundle. Update the
 module rules/loaders to contain the following:
 
 ```js
@@ -83,8 +77,8 @@ module: {
 }
 ```
 
-The `bundle.loader()` will return a correctly pre-configured `file-loader`
-which we can use to extract files.
+The `bundle.loader()` will return a correctly pre-configured loader so we can
+replace the contents of the file, and introduce it into the svgs bundle.
 
 ### Insert the bundle instance as `plugin`
 
