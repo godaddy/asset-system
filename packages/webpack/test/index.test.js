@@ -28,6 +28,44 @@ describe('Asset Pipeline', function () {
     assume(test.apply).is.a('function');
   });
 
+  describe('#loader', function () {
+    beforeEach(function each() {
+      setup('filename.svgs');
+    });
+
+    it('has a loader method', function () {
+      assume(pipeline.loader).is.a('function');
+    });
+
+    it('pre-configures the loader to `file-loader`', function () {
+      const loader = pipeline.loader();
+
+      assume(loader).is.a('object');
+      assume(loader.loader).equals('file-loader');
+    });
+
+    it('provides a name override function that uses bundle#name', function () {
+      const loader = pipeline.loader();
+      const name = loader.options.name;
+
+      [
+        path.join(__dirname, 'test.svg'),
+        path.join(__dirname, 'test/bar.svg')
+      ].forEach(function (filename) {
+        assume(name(filename)).equals(pipeline.bundle.name(filename));
+      });
+    });
+
+    it('proviers a publicPath method that prevents a public path', function () {
+      const loader = pipeline.loader();
+      const publicPath = loader.options.publicPath;
+
+      assume(publicPath('foo')).equals('foo');
+      assume(publicPath('/foo')).equals('/foo');
+      assume(publicPath('/foo/bar')).equals('/foo/bar');
+    });
+  });
+
   describe('#hash', function () {
     const content = '08080ad8fa0d98f0sd98fa0sd98fa0s lol what is this';
 
@@ -65,7 +103,7 @@ describe('WebPack Integration', function () {
 
       module: {
         rules: [
-          { test: /\.svg$/, use: pipeline.use() }
+          { test: /\.svg$/, use: pipeline.loader() }
         ]
       },
 

@@ -79,11 +79,13 @@ class WebPack {
    * loader will be correctly configured.
    *
    * @returns {Object} Use information for WebPack
+   * @public
    */
-  use() {
+  loader() {
     return {
       loader: 'file-loader',
       options: {
+        publicPath: (url) => url,
         name: (file) => this.bundle.name(file)
       }
     };
