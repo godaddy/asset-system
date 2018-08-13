@@ -10,27 +10,6 @@ import fs from 'fs';
 const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
 const entry = path.join(fixtures, 'entry.js');
 
-const config = {
-  entry: entry,
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'output.js'
-  },
-
-  module: {
-    loaders: [
-      { test: /\.svg$/, loaders: ['file-loader'] }
-    ]
-  },
-
-  plugins: [
-    new Pipeline('bundle.svgs', {
-      root: entry,
-      namespace: true
-    })
-  ]
-};
-
 describe('Asset Pipeline', function () {
   let pipeline;
 
@@ -72,6 +51,28 @@ describe('WebPack Integration', function () {
   this.timeout(20000);
 
   function clonepack(merge, fn) {
+    const pipeline = new Pipeline('bundle.svgs', {
+      root: entry,
+      namespace: true
+    });
+
+    const config = {
+      entry: entry,
+      output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'output.js'
+      },
+
+      module: {
+        rules: [
+          { test: /\.svg$/, use: pipeline.use() }
+        ]
+      },
+
+      plugins: [
+      ]
+    };
+
     webpack({ ...config, ...merge }, fn);
   }
 
