@@ -27,7 +27,7 @@ class WebPack {
     //
     // Create the asset-bundle, but instead of passing it with paths
     // we need to pass it an empty array. We're going to call the processing
-    // steps our selfs as we don't have the assets yet.
+    // steps ourselves as we don't have the assets yet.
     //
     this.bundle = new Bundle([], {
       root: namespace ? path.dirname(root || requiredRoot) : null,
