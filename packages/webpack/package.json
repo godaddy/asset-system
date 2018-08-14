@@ -10,7 +10,7 @@
     "test:web": "mocha --colors --require babel-register test/*.test.js",
     "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:web",
     "prepublish": "npm run build",
-    "build": "babel ./index.js -d ./lib",
+    "build": "babel ./index.js ./loader.js -d ./lib",
     "lint": "eslint-godaddy *.js ./test/*.js"
   },
   "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/webpack",
@@ -54,14 +54,13 @@
     "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-react": "^7.5.1",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.6",
     "mocha": "^4.1.0",
     "nyc": "^11.4.1",
     "webpack": "^3.10.0"
   },
   "dependencies": {
     "asset-bundle": "^3.0.0",
-    "async": "^2.6.0"
+    "async": "^2.6.0",
+    "loader-utils": "^1.1.0"
   }
 }

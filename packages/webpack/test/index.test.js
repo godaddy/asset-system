@@ -10,27 +10,6 @@ import fs from 'fs';
 const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
 const entry = path.join(fixtures, 'entry.js');
 
-const config = {
-  entry: entry,
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'output.js'
-  },
-
-  module: {
-    loaders: [
-      { test: /\.svg$/, loaders: ['file-loader'] }
-    ]
-  },
-
-  plugins: [
-    new Pipeline('bundle.svgs', {
-      root: entry,
-      namespace: true
-    })
-  ]
-};
-
 describe('Asset Pipeline', function () {
   let pipeline;
 
@@ -47,6 +26,35 @@ describe('Asset Pipeline', function () {
 
     assume(test.hash).is.a('function');
     assume(test.apply).is.a('function');
+  });
+
+  describe('#loader', function () {
+    beforeEach(function each() {
+      setup('filename.svgs');
+    });
+
+    it('has a loader method', function () {
+      assume(pipeline.loader).is.a('function');
+    });
+
+    it('pre-configures the loader to our own loader', function () {
+      const loader = pipeline.loader();
+
+      assume(loader).is.a('object');
+      assume(loader.loader).equals(require.resolve('../loader'));
+    });
+
+    it('provides a internal override function that uses bundle#name', function () {
+      const loader = pipeline.loader();
+      const name = loader.options.internal;
+
+      [
+        path.join(__dirname, 'test.svg'),
+        path.join(__dirname, 'test/bar.svg')
+      ].forEach(function (filename) {
+        assume(name(filename)).equals(pipeline.bundle.name(filename));
+      });
+    });
   });
 
   describe('#hash', function () {
@@ -72,6 +80,29 @@ describe('WebPack Integration', function () {
   this.timeout(20000);
 
   function clonepack(merge, fn) {
+    const pipeline = new Pipeline('bundle.svgs', {
+      root: entry,
+      namespace: true
+    });
+
+    const config = {
+      entry: entry,
+      output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'output.js'
+      },
+
+      module: {
+        rules: [
+          { test: /\.svg$/, use: pipeline.loader() }
+        ]
+      },
+
+      plugins: [
+        pipeline
+      ]
+    };
+
     webpack({ ...config, ...merge }, fn);
   }
 

@@ -17,18 +17,45 @@ if (!requiredRoot || !~requiredRoot.indexOf('webpack.config.js')) {
   requiredRoot = process.cwd();
 }
 
-/**
- * WebPack wrapper for the asset-bundle module.
- *
- * @constructor
- * @param {String} filename The location of where the asset should be written.
- * @param {Object} options asset-bundle options.
- * @public
- */
 class WebPack {
-  constructor(filename, options) {
-    this.options = options;
-    this.name = filename;
+  constructor(name = 'bundle.svgs', options = {}) {
+    const { plugins, namespace, bundler, modify, root } = options;
+
+    this.name = name;     // Name of the file that needs to be written to disk.
+    this.output = '';     // Output directly that we receive from webpack.
+
+    //
+    // Create the asset-bundle, but instead of passing it with paths
+    // we need to pass it an empty array. We're going to call the processing
+    // steps ourselves as we don't have the assets yet.
+    //
+    this.bundle = new Bundle([], {
+      root: namespace ? path.dirname(root || requiredRoot) : null,
+      ...(bundler || {})
+    });
+
+    //
+    // Assign plugins to the provider if we have them.
+    //
+    if (Array.isArray(plugins)) plugins.forEach((args) => {
+      const Constructor = args.shift();
+      const opts = args.shift() || {};
+
+      Object.defineProperty(opts, 'file', {
+        get: () => {
+          return path.join(this.output, name);
+        }
+      });
+
+      this.bundle.plugin(Constructor, opts);
+    });
+
+    //
+    // Assign modify functions to the bundler.
+    //
+    if (typeof modify === 'object') Object.keys(modify).forEach((key) => {
+      this.bundle.modify(key, modify[key]);
+    });
   }
 
   /**
@@ -48,6 +75,23 @@ class WebPack {
   }
 
   /**
+   * Returns the loader logic for a given WebPack Rule. This ensures that the
+   * loader will be correctly configured.
+   *
+   * @returns {Object} Use information for WebPack
+   * @public
+   */
+  loader() {
+    return {
+      loader: require.resolve('./loader'),
+      options: {
+        external: '[path][name].[ext]',
+        internal: (file) => this.bundle.name(file)
+      }
+    };
+  }
+
+  /**
    * Apply the plugin.
    *
    * @param {Object} compiler The WebPack compiler
@@ -57,37 +101,12 @@ class WebPack {
     compiler.plugin('this-compilation', (compilation) => {
       const options = compilation.options;
       const output = options.output.path;
+      const bundle = this.bundle;
+
+      this.output = output;
 
       compilation.plugin('optimize-assets', (assets, next) => {
-        const { plugins, namespace, bundler, modify, root } = this.options;
         const files = [];
-
-        //
-        // Create the asset-bundle, but instead of passing it with paths
-        // we need to pass it an empty array. We're going to call the processing
-        // steps our selfs as we don't have the assets yet.
-        //
-        const bundle = new Bundle([], {
-          root: namespace ? path.dirname(root || requiredRoot) : null,
-          ...(bundler || {})
-        });
-
-        //
-        // Assign plugins to the provider if we have them.
-        //
-        if (Array.isArray(plugins)) plugins.forEach((args) => {
-          const Constructor = args.shift();
-          const options = args.shift() || {};
-
-          bundle.plugin(Constructor, { ...options, file: path.join(output, this.name) });
-        });
-
-        //
-        // Assign modify functions to the bundler.
-        //
-        if (typeof modify === 'object') Object.keys(modify).forEach((key) => {
-          bundle.modify(key, modify[key]);
-        });
 
         compilation.modules.forEach((module) => {
           const loc = module.resource;
@@ -112,39 +131,6 @@ class WebPack {
           // it's known in the bundle
           //
           delete assets[hash];
-
-          //
-          // Change the original `require('/lol/what.svg')` to return the
-          // resulting name. So you can still do:
-          //
-          // <AssetProvider uri=''>
-          //  <Asset name={ require('./path/to/icon.svg') } />
-          // </AssetProvider>
-          //
-          // Do not touch the following lines, internals are evil. But a
-          // nessecary evil to make this spawn from hell work.
-          //
-          // This hack is stolen from NormalModule#build of the WebPack
-          // source. If this breaks, it's most likely this, good luck
-          // fixing it brave soul that reads this.
-          //
-          // 1. Removing the __webpack_public_path__ will break the build;
-          // 2. Multi line code will break the build;
-          // 3. Not doing a module.exports = __webpack_public_path__ breaks;
-          // 4. As __webpack_public_path__ can be set, we cant use `? x : y`
-          // 5. As __webpack_public_path__ can be "" we cant `x && y`;
-          // 6. We can't even wrap it in () to create: module.exports (__wpp_, y);
-          //
-          // However, doing a double override of the `module.exports` does work
-          // this means we only have to store the (potentially long) name of
-          // the asset once in the new source of the require.
-          //
-          // Have mercy on the brave soul that will ever have to debug this
-          // madness.
-          //
-          // Days wasted by this webpack bullshit: 2
-          //
-          module._source._value = 'module.exports = __webpack_public_path__; module.exports =' + JSON.stringify(name);
         });
 
         //
