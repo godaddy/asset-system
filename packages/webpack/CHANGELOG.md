@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 4.0.0
+
 - [MAJOR] Introduced a new `loader` method that will take care of the file
   content renaming so we can leverage the build-in functionality of `file-loader`.
 
