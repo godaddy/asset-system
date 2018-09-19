@@ -288,8 +288,6 @@ Bundle.defaults = {
     { inlineStyles: true },
     { minifyStyles: true },
     { convertStyleToAttrs: true },
-    { cleanupIDs: true },
-    { prefixIds: true },
     { removeRasterImages: true },
     { removeUselessDefs: true },
     { cleanupNumericValues: true },

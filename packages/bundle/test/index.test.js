@@ -476,4 +476,21 @@ describe('asset-bundle', function () {
       });
     });
   });
+
+  describe('svgo', function () {
+    it('does not mangle classNames', function (next) {
+      const fixture = path.join(fixtures, 'homer-classnames.svg');
+      const bundler = new Bundle([ fixture ]);
+
+      bundler.run((err, str) => {
+        assume(err).is.a('null');
+        assume(str).is.a('string');
+
+        assume(str).includes('"className":"another multiple names"');
+        assume(str).includes('{"className":"classnames-on-group"}');
+
+        next();
+      });
+    });
+  });
 });
