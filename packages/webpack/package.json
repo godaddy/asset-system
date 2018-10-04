@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
@@ -57,7 +58,7 @@
     "mocha": "^4.1.0",
     "nyc": "^11.4.1",
     "setup-env": "^1.2.1",
-    "webpack": "^3.10.0"
+    "webpack": "^4.20.2"
   },
   "dependencies": {
     "asset-bundle": "^3.0.0",
