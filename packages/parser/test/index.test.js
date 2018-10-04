@@ -1,6 +1,6 @@
 import AssetParser, { encode, decode, Asset, version } from '../index.js';
-import { create } from '../../../test/fixtures';
 import { describe, it, before } from 'mocha';
+import { create } from 'asset-test';
 import * as svgs from 'svgs';
 import assume from 'assume';
 import React from 'react';

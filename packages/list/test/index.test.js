@@ -1,12 +1,11 @@
-import Bundle from '../../bundle/index.js';
+import { fixtures } from 'asset-test';
+import Bundle from 'asset-bundle';
 import List from '../index.js';
 import assume from 'assume';
 import clone from 'clone';
 import path from 'path';
 
 describe('List', function () {
-  const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
-
   const godaddy = path.join(fixtures, 'godaddy.svg');
   const tiger = path.join(fixtures, 'tiger.svg');
   const homer = path.join(fixtures, 'homer.svg');

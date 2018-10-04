@@ -1,7 +1,7 @@
-import { create } from '../../../test/fixtures';
 import { Pass } from '../passthrough';
 import transform from '../transform';
 import { describe, it } from 'mocha';
+import { create } from 'asset-test';
 import { mount } from 'enzyme';
 import * as svgs from 'svgs';
 import assume from 'assume';

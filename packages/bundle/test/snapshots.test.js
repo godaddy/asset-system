@@ -1,11 +1,10 @@
 import { decode } from 'asset-parser';
+import { fixtures } from 'asset-test';
 import { describe, it } from 'mocha';
 import Bundle from '../index';
 import assume from 'assume';
 import path from 'path';
 import fs from 'fs';
-
-const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
 
 /**
  * Small helper function to finding all the fixtures.

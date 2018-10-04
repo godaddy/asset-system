@@ -28,8 +28,8 @@
   ],
   "babel": {
     "presets": [
-      "babel-preset-es2015",
-      "babel-preset-react"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ]
   },
   "author": "GoDaddy Operating Company, LLC",
@@ -38,8 +38,9 @@
     "Arnout Kazemier <akazemier@godaddy.com>"
   ],
   "devDependencies": {
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
     "mono-repos": "^0.0.4"
   }
 }
