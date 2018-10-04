@@ -1,7 +1,7 @@
 {
   "name": "asset-test",
   "version": "1.0.0",
-  "description": "Parse SVG asset bundles",
+  "description": "Test fixtures for the asset-system",
   "main": "./lib",
   "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/test",
   "repository": {
