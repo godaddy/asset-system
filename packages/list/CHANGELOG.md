@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Major: Upgraded to use the latest `@babel/*` 7.0 packages.
+
 ### 1.1.0
 
 - Point main/browser to ES5 builds.

@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Major: Upgraded to use the latest `@babel/*` 7.0 packages.
+
 ### 3.0.1
 
 - Also lazy require the `puppeteer` library in our render method.
