@@ -49,6 +49,7 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "asset-test": "^1.0.0",
     "assume": "^1.5.2",
     "eslint": "^4.14.0",
     "eslint-config-godaddy": "^2.1.0",
