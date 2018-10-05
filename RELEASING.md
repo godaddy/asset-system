@@ -10,6 +10,19 @@ Releases are done using the `mono-repos` module:
 npm install -g mono-repos
 ```
 
+## test
+
+This is the bundle that includes all test fixtures that are shared between
+the various of packages. This is probably the first package that you want to
+bump to latest and ensure that every sub-package receives the latest and
+greatest version:
+
+```
+mono --publish test --version x.x.x
+```
+
+Once released, bump version in _every_ package.
+
 ## parser
 
 If there are `asset-parser` changes, update the version in the `CHANGELOG.md`
