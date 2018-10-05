@@ -1,10 +1,9 @@
 import dimensions from '../dimensions';
+import { fixtures } from 'asset-test';
 import { describe, it } from 'mocha';
 import Bundle from '../index';
 import assume from 'assume';
 import path from 'path';
-
-const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
 
 describe('dimensions', function () {
   this.timeout(100000);

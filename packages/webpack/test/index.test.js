@@ -1,4 +1,5 @@
 import { createContext, runInContext } from 'vm';
+import { fixtures } from 'asset-test';
 import { describe, it } from 'mocha';
 import Pipeline from '../index.js';
 import Bundle from 'asset-bundle';
@@ -7,7 +8,6 @@ import assume from 'assume';
 import path from 'path';
 import fs from 'fs';
 
-const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
 const entry = path.join(fixtures, 'entry.js');
 
 describe('Asset Pipeline', function () {

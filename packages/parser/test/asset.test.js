@@ -1,4 +1,4 @@
-import { create } from '../../../test/fixtures';
+import { create } from 'asset-test';
 import { describe, it } from 'mocha';
 import { mount } from 'enzyme';
 import * as svgs from 'svgs';

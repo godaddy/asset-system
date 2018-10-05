@@ -1,13 +1,25 @@
-import godaddy from './godaddy.json';
+import godaddy from '../godaddy.json';
 import path from 'path';
 
+/**
+ * Location of the svgs.
+ *
+ * @type {Object}
+ * @public
+ */
 const svgs = {
-  godaddy: path.join(__dirname, 'godaddy.svg'),
-  homer: path.join(__dirname, 'homer.svg'),
-  tiger: path.join(__dirname, 'tiger.svg'),
+  godaddy: path.join(__dirname, '..', 'godaddy.svg'),
+  homer: path.join(__dirname, '..', 'homer.svg'),
+  tiger: path.join(__dirname, '..', 'tiger.svg'),
 };
 
-export default svgs;
+/**
+ * Location of the fixtures.
+ *
+ * @type {String}
+ * @public
+ */
+const fixtures = path.join(__dirname, '..');
 
 /**
  * Create fixtures, because we really don't different dependencies for
@@ -19,7 +31,7 @@ export default svgs;
  * @returns {Object} Fixtures.
  * @public
  */
-export function create(svgs, React) {
+function create(svgs, React) {
   const { Svg, G, Text, Rect, Circle, TSpan } = svgs;
 
   return {
@@ -99,4 +111,10 @@ export function create(svgs, React) {
       )
     }
   };
+}
+
+export {
+  create,
+  fixtures,
+  svgs as default
 }

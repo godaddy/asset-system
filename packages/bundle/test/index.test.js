@@ -1,11 +1,10 @@
 import { describe, it, beforeEach } from 'mocha';
+import { fixtures } from 'asset-test';
 import { decode } from 'asset-parser';
 import EventEmitter from 'events';
 import Bundle from '../index';
 import assume from 'assume';
 import path from 'path';
-
-const fixtures = path.join(__dirname, '..', '..', '..', 'test', 'fixtures');
 
 describe('asset-bundle', function () {
   const godaddy = path.join(fixtures, 'godaddy.svg');

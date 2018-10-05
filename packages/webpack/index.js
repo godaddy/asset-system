@@ -98,23 +98,24 @@ class WebPack {
    * @private
    */
   apply(compiler) {
-    compiler.plugin('this-compilation', (compilation) => {
+    compiler.hooks.thisCompilation.tap('asset-webpack', (compilation) => {
       const options = compilation.options;
       const output = options.output.path;
       const bundle = this.bundle;
 
       this.output = output;
 
-      compilation.plugin('optimize-assets', (assets, next) => {
+      compilation.hooks.optimizeAssets.tapAsync('asset-webpack', (assets, next) => {
         const files = [];
 
         compilation.modules.forEach((module) => {
-          const loc = module.resource;
+          const loc = module.userRequest;
 
           if (!loc || !loc.match(/\.svg$/)) return;
 
-          const hash = Object.keys(module.assets)[0];
-          const data = module.assets[hash].source();
+          const buildInfo = module.buildInfo;
+          const hash = Object.keys(buildInfo.assets)[0];
+          const data = buildInfo.assets[hash].source();
           const name = bundle.name(loc);
 
           //

@@ -1,0 +1,48 @@
+{
+  "name": "asset-test",
+  "version": "1.0.0",
+  "description": "Test fixtures for the asset-system",
+  "main": "./lib",
+  "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/test",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:godaddy/asset-system.git"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "rm -rf ./lib && babel ./src/*.js -d ./lib"
+  },
+  "keywords": [
+    "Asset",
+    "SVG",
+    "test",
+    "tests"
+  ],
+  "babel": {
+    "plugins": [
+      "@babel/plugin-proposal-object-rest-spread"
+    ],
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "author": "GoDaddy.com Operating Company, LLC",
+  "contributors": [
+    "Arnout Kazemier <akazemier@godaddy.com>"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0"
+  }
+}
