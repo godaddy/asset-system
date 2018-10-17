@@ -1,6 +1,6 @@
 {
   "name": "asset-webpack",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "asset-bundle integration for WebPack",
   "main": "./lib",
   "browser": "./lib",
