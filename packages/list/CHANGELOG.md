@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 2.0.0
+
 - Major: Upgraded to use the latest `@babel/*` 7.0 packages.
 
 ### 1.1.0
