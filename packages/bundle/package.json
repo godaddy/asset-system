@@ -1,6 +1,6 @@
 {
   "name": "asset-bundle",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Build process that transforms (multiple) SVG assets into a asset-parser compatible bundle",
   "main": "./lib",
   "browser": "./lib",
@@ -14,7 +14,7 @@
     "lint": "eslint-godaddy *.js ./test/*.js"
   },
   "dependencies": {
-    "asset-parser": "^2.1.0",
+    "asset-parser": "^3.0.0",
     "async": "^2.6.0",
     "camel-case": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
