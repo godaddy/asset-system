@@ -16,7 +16,8 @@
     "test:list": "mono --test list",
     "test": "mono --test",
     "publish": "mono --publish",
-    "install": "mono --install && mono --link"
+    "install": "mono --install",
+    "link": "mono --link"
   },
   "private": true,
   "repository": {
