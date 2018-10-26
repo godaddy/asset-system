@@ -194,7 +194,7 @@ export default class Provider extends Component {
     //
     if (error) {
       debug('previous fetching resulted in an error, returing Fallback', error);
-      return fn(error, Fallback);
+      return fn(error, this.getFallback());
     }
 
     if (!(name in svgs)) {
@@ -204,7 +204,7 @@ export default class Provider extends Component {
       }
 
       debug(`the supplied name(${name}) does not exist in downloaded svgs bundle`);
-      return fn(new Error('Unknown SVG requested'), Fallback);
+      return fn(new Error('Unknown SVG requested'), this.getFallback());
     }
 
     debug(`passing svg[${name}] to callback`);
@@ -222,6 +222,15 @@ export default class Provider extends Component {
   }
 
   /**
+   * Gets the fallback component for the provider.
+   * @returns {Object} The fallback component
+   * @private
+   */
+  getFallback() {
+    return this.props.fallback || this.context.Fallback || Fallback
+  }
+
+  /**
    * This will introduce new properties into React's `this.context` so names
    * must be picked carefully as this namespace is shared between the whole
    * React eco system.
@@ -230,12 +239,10 @@ export default class Provider extends Component {
    * @private
    */
   getChildContext() {
-    const fallback = this.context.Fallback || Fallback;
-
     return {
-      Fallback: fallback,         // Allows easy sharing of fallback SVG.
-      getItem: this.getItem,      // Get a new item from the SVG parsed cache.
-      modifiers: this.modifiers   // List of properties that trigger modifiers.
+      Fallback: this.getFallback(), // Allows easy sharing of fallback SVG.
+      getItem: this.getItem,        // Get a new item from the SVG parsed cache.
+      modifiers: this.modifiers     // List of properties that trigger modifiers.
     };
   }
 
@@ -273,7 +280,8 @@ Provider.propTypes = {
   timeout: PropTypes.number,
   preload: PropTypes.bool,
   children: PropTypes.node,
-  format: PropTypes.oneOf(['single', 'bundle'])
+  format: PropTypes.oneOf(['single', 'bundle']),
+  fallback: PropTypes.func
 };
 
 /**

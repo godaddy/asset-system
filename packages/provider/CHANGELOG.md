@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Allow for a custom asset fallback at the provider-level
+
 ### 4.0.0
 
 - Major: Upgraded to use the latest `@babel/*` 7.0 packages.
