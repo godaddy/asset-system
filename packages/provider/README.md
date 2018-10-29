@@ -89,6 +89,7 @@ The provider library accepts the following properties:
 - [preload](#preload)
 - [timeout](#timeout)
 - [format](#format)
+- [fallback](#fallback)
 
 #### uri
 
@@ -161,6 +162,22 @@ The format of the specified URI, can either be `single` or `bundle`. Defaults to
 
 ```js
 <Provider uri='http://example.com/svg.bundle' format='bundle'>
+  ..
+</Provider>
+```
+
+#### fallback
+
+An optional component that should be rendered if there was an error downloading assets or the given asset wasn't in the asset bundle.
+
+```js
+import { Rect } from 'svgs';
+
+function myFallbackAsset() {
+  return (<Rect x="0" y="0" width="100" height="100" fill="black" />);
+}
+
+<Provider uri='http://example.com/svg.bundle' fallback={ myFallbackAsset }>
   ..
 </Provider>
 ```
