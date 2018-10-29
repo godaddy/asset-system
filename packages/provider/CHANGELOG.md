@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 4.1.0
+
 - Allow for a custom asset fallback at the provider-level
 
 ### 4.0.0
