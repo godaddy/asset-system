@@ -221,7 +221,11 @@ export default class Asset extends Component {
     if (typeof svg === 'function') {
       const Fallback = svg;
 
-      return <Fallback { ...this.attributes(props) } />;
+      return (
+        <Svg { ...this.attributes(props) } viewBox='0 0 128 64'>
+          <Fallback />
+        </Svg>
+      );
     }
 
     return (
