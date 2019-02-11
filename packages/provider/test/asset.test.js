@@ -150,7 +150,7 @@ describe('Asset', function () {
       assume(asset.state.svg).equals(Fallback);
 
       assume(output).contains('<svg width="100" height="100">');
-      assume(output).contains('<svg viewBox="0 0 128 64"');
+      assume(output).contains('<svg width="100" height="100" viewBox="0 0 128 64"');
       assume(output).contains('</svg>');
     });
 
