@@ -10,11 +10,10 @@ const debug = diagnostics('asset:provider:wrapper');
 /**
  * Renders a default fallback SVG.
  *
- * @param {Object} props Addition props for the Svg element.
  * @returns {React.Element} Fallback SVG.
  * @public
  */
-export default function Fallback(props) {
+export default function Fallback() {
   debug('rendering the fallback');
 
   /*eslint-disable */
