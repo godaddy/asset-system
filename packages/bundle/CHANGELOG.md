@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 4.1.0
+
+- Remove workaround to `await` page renders from puppeteer.
+
 ### 4.0.0
 
 - Major: Upgraded to use the latest `@babel/*` 7.0 packages.
