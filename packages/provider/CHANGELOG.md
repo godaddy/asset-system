@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 4.2.0
+
+- Provide default `viewBox` to fallback image.
+
 ### 4.1.0
 
 - Allow for a custom asset fallback at the provider-level
