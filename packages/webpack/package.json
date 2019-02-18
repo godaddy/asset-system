@@ -1,6 +1,6 @@
 {
   "name": "asset-webpack",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "asset-bundle integration for WebPack",
   "main": "./lib",
   "browser": "./lib",
@@ -63,7 +63,7 @@
     "webpack": "^4.20.2"
   },
   "dependencies": {
-    "asset-bundle": "^3.0.0",
+    "asset-bundle": "^4.1.0",
     "async": "^2.6.0",
     "loader-utils": "^1.1.0"
   }

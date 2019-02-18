@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 6.0.0
+
+- Major: Upgraded to latest `asset-bundle`.
+
 ### 5.0.0
 
 - Major: Upgraded to use the latest `@babel/*` 7.0 packages.
