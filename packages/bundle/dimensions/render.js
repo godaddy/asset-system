@@ -46,7 +46,7 @@ export default async function render(svg, fn) {
     // I guess.
     //
     const { width, height, x, y } = document.getElementsByTagName('svg')[0].getBBox();
-    return { svg: document.getElementsByTagName('svg')[0].outerHTML, width, height, x, y };
+    return { width, height, x, y };
   });
 
   debug('received dimensions', dimensions);
