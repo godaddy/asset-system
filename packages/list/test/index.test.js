@@ -99,8 +99,8 @@ describe('List', function () {
     it('includes the details of the bundle', function () {
       const res = list.details(output, clone(svgs));
 
-      assume(res).contains('- **81.2KB** uncompressed');
-      assume(res).contains('- **30.99KB** compressed(gzip)');
+      assume(res).contains('- **81.13KB** uncompressed');
+      assume(res).contains('- **30.95KB** compressed(gzip)');
       assume(res).contains('- Contains **3** asset');
       assume(res).contains('- Build according to specification **0.1.0**');
     });
