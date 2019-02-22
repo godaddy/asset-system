@@ -80,13 +80,14 @@ export default class Provider extends Component {
    * @private
    */
   saveState(state, fn) {
-    if (!this.mounted) return debug('root component no longer mounted');
+    const me = this; // capture the context to be used in the function below
+    if (!me.mounted) return debug('root component no longer mounted');
 
-    this.setState(state, function () {
-      if (!this.mounted) return debug('root component no longer mounted');
+    me.setState(state, function () {
+      if (!me.mounted) return debug('root component no longer mounted');
 
       fn(...arguments);
-    }.bind(this));
+    });
   }
 
   /**
