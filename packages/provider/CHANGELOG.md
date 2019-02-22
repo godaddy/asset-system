@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 4.2.1
+
 - Simplify array spread usage to avoid babel@7 issue [#7597](https://github.com/babel/babel/issues/7597)
 
 ### 4.2.0
