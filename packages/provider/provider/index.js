@@ -80,10 +80,11 @@ export default class Provider extends Component {
    * @private
    */
   saveState(state, fn) {
-    if (!this.mounted) return debug('root component no longer mounted');
+    const me = this; // capture the context to be used in the function below
+    if (!me.mounted) return debug('root component no longer mounted');
 
-    this.setState(state, () => {
-      if (!this.mounted) return debug('root component no longer mounted');
+    me.setState(state, function () {
+      if (!me.mounted) return debug('root component no longer mounted');
 
       fn(...arguments);
     });
@@ -155,7 +156,7 @@ export default class Provider extends Component {
     debug(`emptying our getItem queue(${this.queue.length})`);
 
     this.queue.forEach((args) => {
-      this.getItem(...args);
+      this.getItem.apply(this, args);
     });
 
     this.queue.length = 0;
