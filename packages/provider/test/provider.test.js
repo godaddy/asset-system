@@ -100,7 +100,7 @@ describe('Provider', function () {
 
       wrapper = shallow(
         <Provider uri={ uri } parser={ parser }>
-        <Asset name='example' width='100' height='100' />
+          <Asset name='example' width='100' height='100' />
         </Provider>
       );
 
@@ -181,21 +181,6 @@ describe('Provider', function () {
   });
 
   describe('#getItem', function () {
-    const ancestorFallback = () => <div>I feel so old</div>;
-    const customFallback = () => <div>¯\_(ツ)_/¯</div>;
-
-    function useCustomFallbackProvider(opts) {
-      const fallback = opts ? opts.fallback : customFallback
-      wrapper = shallow(
-        <Provider uri='http://example.com/500' parser={ parser } fallback={ fallback }>
-          <div>Example</div>
-        </Provider>,
-        opts && opts.options
-      );
-  
-      provider = wrapper.instance();
-    }
-
     it('queues the action if we are currently fetching a resource', function () {
       assume(provider.queue).is.length(0);
 
@@ -223,133 +208,11 @@ describe('Provider', function () {
         assume(provider.state.readyState).equals(READYSTATES.LOADED);
 
         assume(err).is.a('error');
-        assume(data).equals(Fallback);
 
         setTimeout(() => {
           assume(provider.queue).is.length(0);
           next();
         }, 0);
-      });
-    });
-
-    it('returns the fallback and error in case of error state', function (next) {
-      provider.state.readyState = READYSTATES.LOADED;
-      provider.state.error = new Error('Something went wrong');
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Something went wrong');
-
-        assume(data).equals(Fallback);
-
-        next();
-      });
-    });
-
-    it('returns the custom fallback and error in case of error state', function (next) {
-      useCustomFallbackProvider({ fallback: customFallback });
-      provider.state.readyState = READYSTATES.LOADED;
-      provider.state.error = new Error('Something went wrong');
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Something went wrong');
-
-        assume(data).equals(customFallback);
-
-        next();
-      });
-    });
-
-    it('returns the local custom fallback and error in case of error state', function (next) {
-      useCustomFallbackProvider({
-        fallback: customFallback,
-        options: { context: { Fallback: ancestorFallback }}
-      });
-      provider.state.readyState = READYSTATES.LOADED;
-      provider.state.error = new Error('Something went wrong');
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Something went wrong');
-
-        assume(data).equals(customFallback);
-
-        next();
-      });
-    });
-
-    it('returns the ancestor custom fallback and error in case of error state', function (next) {
-      useCustomFallbackProvider({ options: { context: { Fallback: ancestorFallback }}});
-      provider.state.readyState = READYSTATES.LOADED;
-      provider.state.error = new Error('Something went wrong');
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Something went wrong');
-
-        assume(data).equals(ancestorFallback);
-
-        next();
-      });
-    });
-
-    it('returns the fallback and error when receiving an unknown name', function (next) {
-      provider.state.readyState = READYSTATES.LOADED;
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Unknown SVG requested');
-
-        assume(data).equals(Fallback);
-
-        next();
-      });
-    });
-
-    it('returns the custom fallback and error when receiving an unknown name', function (next) {
-      useCustomFallbackProvider({ fallback: customFallback });
-      provider.state.readyState = READYSTATES.LOADED;
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Unknown SVG requested');
-
-        assume(data).equals(customFallback);
-
-        next();
-      });
-    });
-
-    it('returns the local custom fallback and error when receiving an unknown name', function (next) {
-      useCustomFallbackProvider({
-        fallback: customFallback,
-        options: { context: { Fallback: ancestorFallback }}
-      });
-      provider.state.readyState = READYSTATES.LOADED;
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Unknown SVG requested');
-
-        assume(data).equals(customFallback);
-
-        next();
-      });
-    });
-
-
-    it('returns the ancestor custom fallback when no local fallback and error when receiving an unknown name', function (next) {
-      useCustomFallbackProvider({ options: { context: { Fallback: ancestorFallback }}});
-      provider.state.readyState = READYSTATES.LOADED;
-
-      provider.getItem('name', (err, data) => {
-        assume(err).is.a('error');
-        assume(err.message).equals('Unknown SVG requested');
-
-        assume(data).equals(ancestorFallback);
-
-        next();
       });
     });
 
@@ -364,38 +227,6 @@ describe('Provider', function () {
         assume(data).equals('data');
 
         next();
-      });
-    });
-  });
-
-  describe('.context', function () {
-    it('shares the getItem method with the consumers', function () {
-      const childContext = provider.getChildContext();
-
-      assume(childContext).is.a('object');
-      assume(childContext.getItem).equals(provider.getItem);
-    });
-
-    it('shares the modifiers method with the consumers', function () {
-      const childContext = provider.getChildContext();
-
-      assume(childContext).is.a('object');
-      assume(childContext.modifiers).equals(provider.modifiers);
-    });
-
-    it('shares the Fallback svg with consumers', function () {
-      const childContext = provider.getChildContext();
-
-      assume(childContext).is.a('object');
-      assume(childContext.Fallback).equals(Fallback);
-    });
-
-    describe('{ context }', function () {
-      it('shares its context proptypes', function () {
-        assume(context).is.a('object');
-
-        assume(Provider.contextTypes).equals(context);
-        assume(Provider.childContextTypes).equals(context);
       });
     });
   });

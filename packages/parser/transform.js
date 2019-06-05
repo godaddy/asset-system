@@ -1,4 +1,4 @@
-import { Through } from './passthrough';
+import { Through } from 'passing-through';
 import diagnostics from 'diagnostics';
 import * as svgs from 'svgs';
 import React from 'react';
