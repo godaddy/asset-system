@@ -4,7 +4,7 @@
       "packages": [
         "parser/package.json",
         "bundle/package.json",
-        "provider/package.json",
+        "provider/package.json"
       ]
     },
     "tools": {
