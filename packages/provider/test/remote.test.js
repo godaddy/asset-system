@@ -87,7 +87,7 @@ describe('remote', function () {
     }, { parse }, (err, data) => {
       assume(err.message).is.a('string');
       assume(data).is.a('object');
-      assume(cache['GET:http://example-non-existing-nobody-buy-this-domain-plx.lol/'']).is.a('undefined');
+      assume(cache['GET:http://example-non-existing-nobody-buy-this-domain-plx.lol/']).is.a('undefined');
 
       next();
     });
