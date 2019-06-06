@@ -9,7 +9,6 @@ Fetches, parses, and introduces SVG bungles through React Context.
   - [Provider](#provider)
     - [uri](#uri) **required**
     - [preload](#preload)
-    - [timeout](#timeout)
     - [format](#format)
   - [Asset](#asset)
     - [name](#name)
@@ -87,7 +86,6 @@ The provider library accepts the following properties:
 
 - [uri](#uri) **required**
 - [preload](#preload)
-- [timeout](#timeout)
 - [format](#format)
 - [fallback](#fallback)
 
@@ -138,19 +136,6 @@ it.
 
 ```js
 <Provider uri='https://example.com/svg.bundle' preload={ true }>
-  ..
-</Provider>
-```
-
-#### timeout
-
-How long we should wait until an asset is downloaded before giving up and start
-displaying our fallback/failure asset. Please note that this option is configured
-to a sane value (10 sec) by default so only touch this if you know what you're
-doing.
-
-```js
-<Provider uri='http://example.com/svg.bundle' timeout={ 5000 }>
   ..
 </Provider>
 ```

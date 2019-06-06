@@ -1,6 +1,6 @@
 import React, { Component, Children } from 'react';
+import { withContext } from '../context';
 import diagnostics from 'diagnostics';
-import { context } from '../provider';
 import PropTypes from 'prop-types';
 import Svg from '../wrapper';
 import { Rect } from 'svgs';
@@ -32,6 +32,9 @@ const propTypes = {
   onLoadEnd: PropTypes.func,
   onError: PropTypes.func,
   onLoad: PropTypes.func,
+  getItem: PropTypes.array,
+  Fallback: PropTypes.func,
+  modifiers: PropTypes.func,
   title: PropTypes.string,
   name: PropTypes.string,
   data: PropTypes.object
@@ -51,7 +54,7 @@ const knownProps = Object.keys(propTypes);
  * @constructor
  * @public
  */
-export default class Asset extends Component {
+class Asset extends Component {
   constructor() {
     super(...arguments);
 
@@ -85,7 +88,7 @@ export default class Asset extends Component {
    *
    * @private
    */
-  componentWillMount() {
+  componentDidMount() {
     this.mounted = true;
     this.fetch(this.props);
   }
@@ -102,14 +105,14 @@ export default class Asset extends Component {
   }
 
   /**
-   * Process prop changes.
+   * Properties have been updated.
    *
-   * @param {Object} nextProps New props that we received.
+   * @param {Object} prev Previous properties.
    * @private
    */
-  componentWillReceiveProps(nextProps) {
-    this.debug('receiving new props', nextProps);
-    this.fetch(nextProps);
+  componentDidUpdate(prev) {
+    const props = this.props;
+    if (props !== prev) this.fetch(props);
   }
 
   /**
@@ -120,24 +123,39 @@ export default class Asset extends Component {
    * @private
    */
   fetch(props) {
+    const asset = this;
     const name = props.name;
+    const getItems = props.getItem.slice(0);
 
-    if (props.data) return this.trigger('LoadStart', 'Load', 'LoadEnd');
+    if (props.data) return asset.trigger('LoadStart', 'Load', 'LoadEnd');
 
-    this.trigger('LoadStart');
-    this.context.getItem(name, (err, svg) => {
-      if (!this.mounted) return this.debug('asset is nolong mounted, ignoring getItem');
+    asset.trigger('LoadStart');
 
-      if (err) {
-        this.debug('failed to retrieve asset from context', err);
-        this.trigger('LoadEnd', 'Error', err);
-        return this.setState({ svg: svg });
+    //
+    // When we have multiple providers that wrap each other, we're also gonna
+    // end up with multiple `getItem` functions, so we can iterate over all
+    // of them and attempt to search for a match asst.
+    //
+    (function next(svg, err) {
+      const getItem = getItems.shift();
+
+      if (!getItem) {
+        asset.trigger('LoadEnd', 'Error', err || new Error('Failed to find a match svg'));
+        return asset.setState({ svg });
       }
 
-      this.setState({ ...svg.render(props) }, () => {
-        this.trigger('LoadEnd', 'Load');
-      });
-    });
+      getItem(name, (err, result) => {
+        if (!asset.mounted) {
+          return asset.debug('asset is no longer mounted, ignoring getItem');
+        }
+
+        if (err) return next(result || svg, err);
+
+        asset.setState({ ...result.render(props) }, () => {
+          asset.trigger('LoadEnd', 'Load');
+        });
+      })
+    }(this.props.Fallback));
   }
 
   /**
@@ -185,7 +203,7 @@ export default class Asset extends Component {
   attributes(props = {}) {
     const attributes = rip(
       { ...this.props, ...props },
-      ...this.context.modifiers(),
+      ...this.props.modifiers(),
       ...knownProps
     );
 
@@ -244,10 +262,12 @@ export default class Asset extends Component {
  */
 Asset.propTypes = propTypes;
 
-/**
- * Instruct React what context types we're expecting.
- *
- * @type {Object}
- * @private
- */
-Asset.contextTypes = context;
+//
+// Expose the interfaces.
+//
+const Consumer = withContext(Asset);
+export {
+  Consumer as default,
+  Consumer,
+  Asset
+}

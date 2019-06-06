@@ -1,9 +1,10 @@
 import { Component, Children } from 'react';
 import AssetParser from 'asset-parser';
 import diagnostics from 'diagnostics';
-import Fallback from '../fallback';
+import { ProSumer } from '../context';
 import PropTypes from 'prop-types';
-import Remote from './remote';
+import remote from './remote';
+import React from 'react';
 
 //
 // Setup our debug util.
@@ -14,7 +15,6 @@ const debug = diagnostics('asset:provider');
 // Our actual Parser and Fetcher logic
 //
 export const parser = new AssetParser();
-const remote = new Remote();
 
 /**
  * Various of readyStates of the Provider.
@@ -47,9 +47,9 @@ export default class Provider extends Component {
       svgs: {}                        // List of parsed SVG's.
     };
 
-    this.modifiers = this.modifiers.bind(this);
-    this.getItem = this.getItem.bind(this);
-    this.empty = this.empty.bind(this);
+    ['modifiers', 'getItem', 'empty'].forEach((key) => {
+      this[key] = this[key].bind(this);
+    });
 
     //
     // Start fetching the specified URI instantly instead of waiting for an
@@ -130,20 +130,24 @@ export default class Provider extends Component {
    * @private
    */
   fetch(fn) {
-    const { timeout, method, format, uri, parser } = this.props;
+    const { format, uri, parser } = this.props;
 
     this.saveState({ readyState: READYSTATES.LOADING }, () => {
       debug('set readyState to LOADING');
 
       this.resolve(uri, (err, url) => {
-        if (err) return this.saveState({ readyState: READYSTATES.LOADED, error: err, svgs: {} }, fn);
+        if (err) return this.saveState({
+          readyState: READYSTATES.LOADED,
+          error: err,
+          svgs: {}
+        }, fn);
 
-        remote.fetch({ timeout, method, format, uri: url }, parser, (error, svgs) => {
+        remote({ format, url }, parser, (error, svgs) => {
           debug('set readyState to LOADED', error, svgs);
 
           this.saveState({ readyState: READYSTATES.LOADED, error, svgs }, fn);
         });
-      })
+      });
     });
   }
 
@@ -188,25 +192,9 @@ export default class Provider extends Component {
       return;
     }
 
-    //
-    // Fetching resulted in an error, instead of displaying content we're
-    // returing our fallback SVG but not without telling the consumer about the
-    // error.
-    //
-    if (error) {
-      debug('previous fetching resulted in an error, returing Fallback', error);
-      return fn(error, this.getFallback());
-    }
+    if (error) return fn(error);
 
-    if (!(name in svgs)) {
-      if (typeof this.context.getItem === 'function') {
-        debug(`the supplied name(${name}) was not found in our bundle, attempting parent provider`);
-        return this.context.getItem(name, fn);
-      }
-
-      debug(`the supplied name(${name}) does not exist in downloaded svgs bundle`);
-      return fn(new Error('Unknown SVG requested'), this.getFallback());
-    }
+    if (!(name in svgs)) return fn(new Error('Unknown SVG requested'));
 
     debug(`passing svg[${name}] to callback`);
     fn(null, svgs[name]);
@@ -223,42 +211,17 @@ export default class Provider extends Component {
   }
 
   /**
-   * Gets the fallback component for the provider.
-   * @returns {Object} The fallback component
-   * @private
-   */
-  getFallback() {
-    return this.props.fallback || this.context.Fallback || Fallback
-  }
-
-  /**
-   * This will introduce new properties into React's `this.context` so names
-   * must be picked carefully as this namespace is shared between the whole
-   * React eco system.
-   *
-   * @returns {Object} Data that ends up in `this.context`.
-   * @private
-   */
-  getChildContext() {
-    return {
-      Fallback: this.getFallback(), // Allows easy sharing of fallback SVG.
-      getItem: this.getItem,        // Get a new item from the SVG parsed cache.
-      modifiers: this.modifiers     // List of properties that trigger modifiers.
-    };
-  }
-
-  /**
    * Render all the child components.
    *
    * @returns {Array} Childeren that get need to get rendered.
    * @private
    */
   render() {
-    const child = typeof this.context.getItem === 'function';
-    const state = Object.keys(READYSTATES)[this.state.readyState - 1];
-    debug(`rendering <Provider state={${state}}>, we are`, child ? 'a child of another <Provider>' : 'the absolute root');
-
-    return this.props.children;
+    return (
+      <ProSumer getItem={ this.getItem } modifiers={ this.modifiers } fallback={ this.props.fallback }>
+        { this.props.children }
+      </ProSumer>
+    );
   }
 }
 
@@ -277,8 +240,6 @@ Provider.propTypes = {
     PropTypes.string,
     PropTypes.func
   ]).isRequired,
-  method: PropTypes.string,
-  timeout: PropTypes.number,
   preload: PropTypes.bool,
   children: PropTypes.node,
   format: PropTypes.oneOf(['single', 'bundle']),
@@ -295,27 +256,5 @@ Provider.propTypes = {
 Provider.defaultProps = {
   format: 'bundle',
   preload: false,
-  timeout: 10000,
-  method: 'GET',
   parser
 };
-
-/**
- * PropTypes that are used for the React Context validation. The const is
- * exported so the Asset component can dependent on it and use the same
- * PropTypes.
- *
- * @type {Object}
- * @private
- */
-export const context = {
-  modifiers: PropTypes.func,
-  Fallback: PropTypes.func,
-  getItem: PropTypes.func
-};
-
-//
-// Actually assign the stored context properties.
-//
-Provider.contextTypes = context;
-Provider.childContextTypes = context;

@@ -1,94 +1,82 @@
 import { describe, it } from 'mocha';
 import Fallback from '../fallback';
 import { shallow } from 'enzyme';
-import Asset from '../asset';
+import AssetConsumer, { Asset } from '../asset';
 import { Text } from 'svgs';
 import assume from 'assume';
 import React from 'react';
 
 describe('Asset', function () {
   const data = <Text>Context</Text>;
+  let context;
   let wrapper;
   let output;
   let asset;
+  let ref;
 
   function setup(Component, props, render) {
-    wrapper = shallow(<Component { ...props } />, {
-      lifecycleExperimental: true,
-      context: {
-        modifiers: () => {
-          return [];
-        },
-        getItem: (name, fn) => {
-          if (render) return fn(null, { render });
+    function modifiers() {
+      return [];
+    }
 
-          fn(null, {
-            render: function () {
-              return {
-                svg: 'what',
-                props: {}
-              };
-            }
-          });
+    function getItem(name, fn) {
+      if (render) return fn(null, { render });
+
+      fn(null, {
+        render: function () {
+          return {
+            svg: 'what',
+            props: {}
+          };
         }
-      }
+      });
+    }
+
+    ref = React.createRef();
+    context = shallow(<Component
+      ref={ ref }
+      { ...props }
+      modifiers={ props.modifiers || modifiers }
+      getItem={[ props.getItem || getItem ]}
+      />, {
+      lifecycleExperimental: true
     });
 
-    asset = wrapper.instance();
+    wrapper = context.dive().dive();
     output = wrapper.html();
+    asset = wrapper.instance();
   }
 
   describe('#loading', function () {
     it('renders the children if its still loading', function () {
       wrapper = shallow(
-        <Asset width={ 100 } height={ 100 } name='example'>
+        <AssetConsumer width={ 100 } height={ 100 } name='example'>
           <div className='foo'>anything is allowed here</div>
-        </Asset>, {
-          context: {
-            modifiers: () => {
-              return [];
-            },
-            getItem: (name, fn) => {
-              setTimeout(() => {
-                fn(null, {
-                  render: () => {
-                    return {
-                      svg: <Text>Loaded</Text>,
-                      props: {}
-                    };
-                  }
-                });
-              }, 10);
-            }
-          }
-        });
+        </AssetConsumer>
+      );
 
       output = wrapper.html();
-
       assume(output).equals('<div class="foo">anything is allowed here</div>');
     });
 
     it('displays a transparent rect in exactly the same size', function () {
-      wrapper = shallow(
-        <Asset width={ 100 } height={ 100 } name='example' />, {
-          context: {
-            modifiers: () => {
-              return [];
-            },
-            getItem: (name, fn) => {
-              setTimeout(() => {
-                fn(null, {
-                  render: () => {
-                    return {
-                      svg: <Text>Loaded</Text>,
-                      props: {}
-                    };
-                  }
-                });
-              }, 10);
-            }
-          }
-        });
+      setup(AssetConsumer, {
+        width: 100,
+        height: 100,
+        name: 'example',
+        getItem: (name, fn) => {
+          setTimeout(() => {
+            fn(null, {
+              render: () => {
+                return {
+                  svg: <Text>Loaded</Text>,
+                  props: {}
+                };
+              }
+            });
+          }, 10);
+        }
+      });
 
       output = wrapper.html();
 
@@ -100,7 +88,7 @@ describe('Asset', function () {
 
   describe('data={ .. }', function () {
     it('does not fetch resources when data is provided manually', function () {
-      setup(Asset, { data, width: 100, height: 100 }, () => {
+      setup(AssetConsumer, { data, width: 100, height: 100 }, () => {
         throw new Error('I should not render');
       });
 
@@ -108,7 +96,7 @@ describe('Asset', function () {
     });
 
     it('renders the supplied data', function () {
-      setup(Asset, { data, width: 100, height: 100 });
+      setup(AssetConsumer, { data, width: 100, height: 100 });
 
       assume(wrapper.first().name()).equals('SvgWrapper');
       assume(output).contains('<text>Context</text>');
@@ -119,7 +107,7 @@ describe('Asset', function () {
 
   describe('name={ .. }', function () {
     it('fetches the element from the context', function () {
-      setup(Asset, { name: 'example', width: 100, height: 200 }, () => {
+      setup(AssetConsumer, { name: 'example', width: 100, height: 200 }, () => {
         return {
           svg: data,
           props: {}
@@ -132,20 +120,14 @@ describe('Asset', function () {
     });
 
     it('renders the fallback SVG on errors', function () {
-      wrapper = shallow(
-        <Asset width={ 100 } height={ 100 } name='example' />, {
-          context: {
-            modifiers: () => {
-              return [];
-            },
-            getItem: (name, fn) => {
-              fn(new Error('unknown whatever error'), Fallback);
-            }
-          }
-        });
-
-      asset = wrapper.instance();
-      output = wrapper.html();
+      setup(AssetConsumer, {
+        width: 100,
+        height: 100,
+        name: 'example',
+        getItem: (name,fn) => {
+          fn(new Error('unknown whatever error'), Fallback);
+        }
+      });
 
       assume(asset.state.svg).equals(Fallback);
 
@@ -155,7 +137,7 @@ describe('Asset', function () {
     });
 
     it('renders with viewBox if supplied', function () {
-      setup(Asset, { name: 'example', width: 100, height: 200 }, () => {
+      setup(AssetConsumer, { name: 'example', width: 100, height: 200 }, () => {
         return {
           svg: data,
           props: { }
@@ -168,7 +150,7 @@ describe('Asset', function () {
       assume(output).contains('<text>Context</text>');
       assume(output).contains('</svg>');
 
-      setup(Asset, { name: 'example', width: 100, height: 200 }, () => {
+      setup(AssetConsumer, { name: 'example', width: 100, height: 200 }, () => {
         return {
           svg: data,
           props: { viewBox: '0 0 140 100' }
@@ -185,7 +167,7 @@ describe('Asset', function () {
 
   describe('title={ .. }', function () {
     it('renders the asset with accessiblity information', function () {
-      setup(Asset, { name: 'example', width: 100, height: 200, title: 'work work work' }, () => {
+      setup(AssetConsumer, { name: 'example', width: 100, height: 200, title: 'work work work' }, () => {
         return {
           svg: data,
           props: {}
@@ -199,26 +181,15 @@ describe('Asset', function () {
 
   describe('#attributes', function () {
     function modify(modifiers) {
-      wrapper = shallow(<Asset style={{}} onClick={ () => {} } name='foo' height={ 1 } width={ 1 } color='red' />, {
-        lifecycleExperimental: true,
-        context: {
-          modifiers: () => {
-            return modifiers;
-          },
-          getItem: (name, fn) => {
-            fn(null, {
-              render: function () {
-                return {
-                  svg: data,
-                  props: {}
-                };
-              }
-            });
-          }
-        }
+      setup(AssetConsumer, {
+        style: {},
+        onClick: () => {},
+        name: 'foo',
+        height: 1,
+        width: 1,
+        color: 'red',
+        modifiers: () => modifiers
       });
-
-      asset = wrapper.instance();
     }
 
     it('removes all PropsTypes that should not be on SVG elements', function () {
@@ -252,7 +223,7 @@ describe('Asset', function () {
 
   describe('events', function () {
     it('invokes `onLoadStart` when an asset is starting to load', function (next) {
-      setup(Asset, {
+      setup(AssetConsumer, {
         onLoadStart: function () {
           assume(this).is.instanceOf(Asset);
           assume(this.state.svg).is.a('null');
@@ -271,7 +242,7 @@ describe('Asset', function () {
     });
 
     it('invokes `onLoadStart` for `data=` assets', function (next) {
-      setup(Asset, {
+      setup(AssetConsumer, {
         onLoadStart: function () {
           assume(this).is.instanceOf(Asset);
           assume(this.state.svg).equals(data);
@@ -286,7 +257,7 @@ describe('Asset', function () {
     });
 
     it('invokes `onLoad` when the asset is loaded', function (next) {
-      setup(Asset, {
+      setup(AssetConsumer, {
         onLoad: function () {
           assume(this).is.instanceOf(Asset);
           assume(this.state.svg).equals(data);
@@ -305,7 +276,7 @@ describe('Asset', function () {
     });
 
     it('invokes `onLoad` for `data=` assets', function (next) {
-      setup(Asset, {
+      setup(AssetConsumer, {
         onLoad: function () {
           assume(this).is.instanceOf(Asset);
           assume(this.state.svg).equals(data);
@@ -320,6 +291,7 @@ describe('Asset', function () {
 
     it('invokes `onError` when an asset fails to load', function (next) {
       const error = new Error('Example failure');
+
       function onError(err) {
         assume(this).is.instanceOf(Asset);
         assume(err).is.a('error');
@@ -328,13 +300,14 @@ describe('Asset', function () {
         next();
       }
 
-      shallow(<Asset name='foo' width={ 10 } height={ 10 } onError={ onError } />, {
-        lifecycleExperimental: true,
-        context: {
-          getItem: (name, fn) => {
-            fn(error);
-          }
-        }
+      setup(AssetConsumer, {
+        name:'foo',
+        width: 10,
+        height: 10,
+        getItem: (name, fn) => {
+          fn(error);
+        },
+        onError
       });
     });
   });
@@ -368,7 +341,7 @@ describe('Asset', function () {
         }
       ];
 
-      setup(Asset, { name: 'foo', width: 10, height: 10, foo: 'bar' }, (...args) => {
+      setup(AssetConsumer, { name: 'foo', width: 10, height: 10, foo: 'bar' }, (...args) => {
         return render.pop()(...args);
       });
 
@@ -403,15 +376,12 @@ describe('Asset', function () {
         }
       ];
 
-      wrapper = shallow(<Asset name='foo' width={ 10 } height={ 10 } />, {
-        lifecycleExperimental: true,
-        context: {
-          modifiers: () => {
-            return [];
-          },
-          getItem: (name, fn) => {
-            getItems.pop()(name, fn);
-          }
+      setup(AssetConsumer, {
+        name: 'foo',
+        width: 10,
+        height: 10,
+        getItem: (name, fn) => {
+          getItems.pop()(name, fn);
         }
       });
 

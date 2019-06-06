@@ -1,0 +1,18 @@
+{
+  "groups": {
+    "core": {
+      "packages": [
+        "parser/package.json",
+        "bundle/package.json",
+        "provider/package.json"
+      ]
+    },
+    "tools": {
+      "packages": [
+        "list/package.json",
+        "test/package.json",
+        "webpack/package.json"
+      ]
+    }
+  }
+}

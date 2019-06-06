@@ -1,4 +1,4 @@
-import Provider, { Asset, Fallback, context, parser } from '../index';
+import Provider, { Asset, Fallback, Context, parser } from '../index';
 import { describe, it } from 'mocha';
 import Parser from 'asset-parser';
 import { mount } from 'enzyme';
@@ -19,6 +19,7 @@ describe('Asset Provider', function () {
     assume(html).to.contain('<text y="140" dx="0 5 5" dy="0 -5 -5">delta on text</text>');
     /* eslint-enable */
   }
+
   /**
    * Assert that the godaddy fixture is present in the output.
    *
@@ -34,11 +35,14 @@ describe('Asset Provider', function () {
   it('exposes all core components', function () {
     assume(parser).is.instanceOf(Parser);
 
-    assume(Asset).is.a('function');
+    assume(Asset).exists();
+    assume(Provider).exists();
     assume(Fallback).is.a('function');
 
-    assume(context).is.a('object');
-    assume(context).equals(Provider.contextTypes);
+    assume(Context).is.a('object');
+    assume(Context.withContext).is.a('function');
+    assume(Context.Provider).exists();
+    assume(Context.Consumer).exists();
   });
 
   it('renders assets', function (next) {

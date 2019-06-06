@@ -1,4 +1,4 @@
-import { Pass } from '../passthrough';
+import { Pass } from 'passing-through';
 import transform from '../transform';
 import { describe, it } from 'mocha';
 import { create } from 'asset-test';

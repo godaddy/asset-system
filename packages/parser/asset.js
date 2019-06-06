@@ -1,5 +1,5 @@
+import { Pass } from 'passing-through';
 import diagnostics from 'diagnostics';
-import { Pass } from './passthrough';
 import transform from './transform';
 import React from 'react';
 import { G } from 'svgs';

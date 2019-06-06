@@ -1,4 +1,3 @@
-import { Pass, Through } from './passthrough';
 import { encode, decode } from './packer';
 import diagnostics from 'diagnostics';
 import Asset from './asset';
@@ -116,8 +115,6 @@ export default class Parser {
 // Export all the components, parsers and utilities.
 //
 export {
-  Pass,
-  Through,
   encode,
   decode,
   Asset
