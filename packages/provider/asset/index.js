@@ -134,7 +134,7 @@ class Asset extends Component {
     //
     // When we have multiple providers that wrap each other, we're also gonna
     // end up with multiple `getItem` functions, so we can iterate over all
-    // all of them and attempt to search for a match asst.
+    // of them and attempt to search for a match asst.
     //
     (function next(svg, err) {
       const getItem = getItems.shift();

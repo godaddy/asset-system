@@ -22,9 +22,12 @@ describe('remote', function () {
     fn(null, {});
   }
 
-  beforeEach(function () {
+  function nukeCache() {
     for (let key in cache) delete cache[key];
-  });
+  }
+
+  beforeEach(nukeCache);
+  afterEach(nukeCache);
 
   it('returns items from cache', function (next) {
     const item = queue.id(method, url);
