@@ -11,7 +11,9 @@
     "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:web",
     "prepublishOnly": "npm run build",
     "build": "rm -rf ./lib && babel ./index.js -d ./lib && babel ./walker/*.js -d ./lib/walker && babel ./dimensions/*.js -d ./lib/dimensions",
-    "lint": "eslint-godaddy *.js ./test/*.js"
+    "lint": "eslint-godaddy *.js ./test/*.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "asset-parser": "^3.0.0",
@@ -20,7 +22,8 @@
     "cheerio": "^1.0.0-rc.2",
     "diagnostics": "^1.1.0",
     "react": "^16.2.0",
-    "svgo": "^1.0.3"
+    "svgo": "^1.0.3",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
@@ -81,5 +84,6 @@
   "contributors": [
     "Arnout Kazemier <akazemier@godaddy.com>"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
