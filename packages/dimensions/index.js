@@ -1,7 +1,4 @@
-import diagnostics from 'diagnostics';
 import render from './render';
-
-const debug = diagnostics('asset:bundle:dimensions');
 
 /**
  * Really stupid simple warning output.
@@ -14,8 +11,25 @@ function warning(lines) {
   lines.push('');       // Extra whitespace at the end.
 
   lines.forEach(function each(line) {
-    console.error('asset-bundle:warning', line);
+    console.error('asset-dimensions:warning', line);
   });
+}
+
+/**
+ * Compile a viewBox from the given.
+ *
+ * @param {Object} details The width/height for the viewBox.
+ * @returns {Object} Dimensions, and viewbox of the svg asset.
+ * @private
+ */
+function viewBox({ width, height, x = 0, y = 0 }) {
+  return {
+    viewBox: `${x} ${y} ${width} ${height}`,
+    height: +height,
+    width: +width,
+    x: +x,
+    y: +y
+  };
 }
 
 /**
@@ -23,23 +37,10 @@ function warning(lines) {
  * a valid viewBox for the SVG.
  *
  * @param {Object} svg Our internal SVG object.
- * @param {Function} fn Error first completion callback.
- * @private
+ * @returns {Object} Bounding box, and viewBox information of the asset.
+ * @public
  */
-export default function dimensions(svg, fn) {
-  /**
-   * Compile a viewBox from the given.
-   *
-   * @param {Object} details The width/height for the viewBox.
-   * @private
-   */
-  function viewBox(details) {
-    svg.viewBox = `${details.x || 0} ${details.y || 0} ${details.width} ${details.height}`;
-
-    fn(null, svg);
-  }
-
-  const tree = svg.tree;
+export default async function dimensions({ file, source, tree }) {
   const root = tree('svg');
 
   //
@@ -80,14 +81,13 @@ export default function dimensions(svg, fn) {
   // has `width` and `height` set as we cannot accurately measure it. And
   // in case of no width/height combo we will do a hard fail, forcing people
   // to install it.
-
+  //
   let puppeteer = true;
-  try { require.resolve('puppeteer'); }
-  catch (e) { puppeteer = false; }
+  try { require.resolve('puppeteer'); } catch (e) { puppeteer = false; }
 
   if (!puppeteer && (root.attr('width') && root.attr('height'))) {
     warning([
-      'file: '+ svg.loc,
+      'file: ' + file,
       '',
       'One of the svgs did not have a viewBox property, in order to correctly',
       'calculate this, we need use `puppeteer` for browser based detection.',
@@ -100,12 +100,14 @@ export default function dimensions(svg, fn) {
 
     return viewBox({
       width: root.attr('width'),
-      height: root.attr('height')
+      height: root.attr('height'),
+      x: 0,
+      y: 0
     });
   }
 
   if (!puppeteer) throw new Error([
-    'file: '+ svg.loc,
+    'file: ' + file,
     '',
     'The supplied svg image does not have a `viewBox` and `width/height` combination.',
     'We are unable to extract or create a valid viewBox for this asset without the',
@@ -116,9 +118,6 @@ export default function dimensions(svg, fn) {
     'Or manually fix the svg, and run the bundle command again.'
   ].join('\n'));
 
-  render(svg.data.replace(/<svg[^<]+?>/g, '<svg>'), function (bb) {
-    setImmediate(function escapePromiseHell() {
-      viewBox(bb);
-    });
-  });
+  const boundingbox = await render(source.replace(/<svg[^<]+?>/g, '<svg>'));
+  return viewBox(boundingbox);
 }

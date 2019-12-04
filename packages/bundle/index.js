@@ -1,5 +1,5 @@
+import dimensions from 'asset-dimensions';
 import diagnostics from 'diagnostics';
-import dimensions from './dimensions';
 import * as AP from 'asset-parser';
 import EventEmitter from 'events';
 import { load } from 'cheerio';
@@ -214,7 +214,16 @@ class Bundle extends EventEmitter {
    * @private
    */
   viewBox(svgos, fn) {
-    async.map(svgos, dimensions, this.broadcast('viewBox', fn));
+    async.map(svgos, function (svg, next) {
+      dimensions({
+        file: svg.loc,
+        tree: svg.tree,
+        source: svg.data
+      }).then(function merge(data) {
+        Object.assign(svg, data);
+        next(undefined, svg);
+      }).catch(next);
+    }, this.broadcast('viewBox', fn));
   }
 
   /**
