@@ -4,11 +4,13 @@
   "description": "asset-system is a cross platform asset system for React and React-Native. This repo is the home for all asset- packages.",
   "main": "index.js",
   "scripts": {
+    "publish:dimensions": "mono --publish dimensions",
     "publish:provider": "mono --publish provider",
     "publish:webpack": "mono --publish webpack",
     "publish:parser": "mono --publish parser",
     "publish:bundle": "mono --publish bundle",
     "publish:list": "mono --publish list",
+    "test:dimensions": "mono --test dimensions",
     "test:provider": "mono --test provider",
     "test:webpack": "mono --test webpack",
     "test:parser": "mono --test parser",
