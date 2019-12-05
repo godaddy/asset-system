@@ -10,7 +10,7 @@
     "test:web": "mocha --colors --require setup-env test/*.test.js",
     "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:web",
     "prepublishOnly": "npm run build",
-    "build": "rm -rf ./lib && babel ./index.js -d ./lib && babel ./walker/*.js -d ./lib/walker && babel ./dimensions/*.js -d ./lib/dimensions",
+    "build": "rm -rf ./lib && babel ./index.js -d ./lib && babel ./walker/*.js -d ./lib/walker",
     "lint": "eslint-godaddy *.js ./test/*.js"
   },
   "dependencies": {
