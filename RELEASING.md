@@ -44,6 +44,17 @@ and release a new version:
 mono --publish provider --version x.x.x
 ```
 
+## dimensions
+
+If there are `asset-dimensions` changes, update the version in the `CHANGELOG.md`
+and release a new version:
+
+```
+mono --publish dimensions --version x.x.x
+```
+
+- Bump released version in `asset-bundle`
+
 ## bundle
 
 If there are `asset-bundle` changes, update the version in the `CHANGELOG.md`

@@ -1,7 +1,3 @@
-import diagnostics from 'diagnostics';
-
-const debug = diagnostics('asset:bundle:render');
-
 let puppeteer;
 try {
   puppeteer = require('puppeteer');
@@ -17,10 +13,10 @@ try {
  * the bounding box information.
  *
  * @param {String} svg The svg we want to render.
- * @param {Function} fn Completion callback.
- * @private
+ * @returns {Object} Calculated dimensions for the boundingbox.
+ * @public
  */
-export default async function render(svg, fn) {
+export default async function render(svg) {
   const html = `<!DOCTYPE html><html><head></head><body>${svg}</body></html>`;
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
@@ -49,8 +45,7 @@ export default async function render(svg, fn) {
     return { width, height, x, y };
   });
 
-  debug('received dimensions', dimensions);
   await browser.close();
 
-  fn(dimensions);
+  return dimensions;
 }

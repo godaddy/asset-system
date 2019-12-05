@@ -1,0 +1,72 @@
+{
+  "name": "asset-dimensions",
+  "version": "1.0.0",
+  "description": "Get the size of your asset in width and height",
+  "main": "./lib",
+  "module": "./index",
+  "scripts": {
+    "build": "rm -rf ./lib && babel ./index.js -d ./lib && babel ./render.js -d ./lib",
+    "test:runner": "mocha --colors --require setup-env test.js",
+    "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:runner",
+    "lint": "eslint-godaddy *.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/godaddy/asset-system.git"
+  },
+  "keywords": [
+    "asset",
+    "size",
+    "svg",
+    "dimensions",
+    "width",
+    "height",
+    "calculate",
+    "parse"
+  ],
+  "babel": {
+    "plugins": [
+      "@babel/plugin-proposal-object-rest-spread"
+    ],
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": 9
+          }
+        }
+      ],
+      "@babel/preset-react"
+    ]
+  },
+  "author": "GoDaddy.com Operating Company, LLC",
+  "contributors": [
+    "Arnout Kazemier <akazemier@godaddy.com>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/godaddy/asset-system/issues"
+  },
+  "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/dimensions",
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "asset-test": "^1.0.0",
+    "assume": "^1.5.2",
+    "cheerio": "^1.0.0-rc.3",
+    "eslint": "^4.14.0",
+    "eslint-config-godaddy": "^2.1.0",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-react": "^7.5.1",
+    "mocha": "^5.0.1",
+    "nyc": "^11.4.1",
+    "puppeteer": "^1.1.0",
+    "setup-env": "^1.2.1"
+  }
+}

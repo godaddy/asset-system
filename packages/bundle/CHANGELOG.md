@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Moved `dimensions` to it's own standalone project for re-use purposes.
+
 ### 4.1.0
 
 - Remove workaround to `await` page renders from puppeteer.
