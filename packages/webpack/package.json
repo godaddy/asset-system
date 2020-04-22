@@ -9,9 +9,10 @@
   "scripts": {
     "test:web": "mocha --colors --require setup-env test/*.test.js",
     "test": "npm run build && nyc --reporter=text --reporter=lcov npm run test:web",
-    "prepublish": "npm run build",
+    "prepublish": "npm run snyk-protect; npm run build",
     "build": "babel ./index.js ./loader.js -d ./lib",
-    "lint": "eslint-godaddy *.js ./test/*.js"
+    "lint": "eslint-godaddy *.js ./test/*.js",
+    "snyk-protect": "snyk protect"
   },
   "homepage": "https://github.com/godaddy/asset-system/tree/master/packages/webpack",
   "repository": {
@@ -65,6 +66,8 @@
   "dependencies": {
     "asset-bundle": "^4.1.0",
     "async": "^2.6.0",
-    "loader-utils": "^1.1.0"
-  }
+    "loader-utils": "^1.1.0",
+    "snyk": "^1.189.0"
+  },
+  "snyk": true
 }
