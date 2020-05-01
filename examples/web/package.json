@@ -4,7 +4,9 @@
   "description": "Examples of how the asset-provider works.",
   "main": "index.js",
   "scripts": {
-    "start": "node babel.js"
+    "start": "node babel.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "private": true,
   "license": "MIT",
@@ -35,6 +37,8 @@
     "memory-fs": "^0.4.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "webpack": "^4.0.0"
-  }
+    "webpack": "^4.0.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
