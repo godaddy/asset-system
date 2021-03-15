@@ -35,6 +35,6 @@
     "memory-fs": "^0.4.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "webpack": "^4.0.0"
+    "webpack": "^5.0.0"
   }
 }
