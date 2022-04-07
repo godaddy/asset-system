@@ -16,7 +16,7 @@
   "dependencies": {
     "asset-dimensions": "^1.0.0",
     "asset-parser": "^3.0.0",
-    "async": "^2.6.0",
+    "async": "^3.2.2",
     "camel-case": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
     "diagnostics": "^1.1.0",
